@@ -1,0 +1,806 @@
+{
+    "UI": {
+        "resizable": true,
+        "maintain_aspect_ratio": true,
+        "width": 1000,
+        "height": 740,
+
+        "Tabs": {
+            "show_grid": true,
+            "draw_borders_for_components": false,
+            "tabList": [
+                {
+                    "name": "Basic",
+                    "sliders": [
+                        {
+                            "label": "Adaptive Follow Amount",
+                            "min": 0.2,
+                            "max": 1.0,
+                            "default": 0.8,
+                            "topLeftCorner": "Kl",
+                            "bottomRightCorner": "Nm",
+                            "horizontal": true,
+                            "show_label": false,
+                            "exclude_from_presets": true,
+                            "info": "Maximum amount of following the groove if `Adaptive Follow` is on"
+                        },
+                        {
+                            "label": "AB Oscillation Rate",
+                            "min": 0.0,
+                            "max": 10.0,
+                            "default": 0.0,
+                            "topLeftCorner": "Gt",
+                            "bottomRightCorner": "Kv",
+                            "horizontal": true,
+                            "show_label": false,
+                            "exclude_from_presets": true,
+                            "info": "Specifies the rate of oscillation between A and B - If zero, moves only manually"
+                        },
+                        {
+                            "label": "Generation Quantization",
+                            "min": 0.0,
+                            "max": 1.0,
+                            "default": 0,
+                            "topLeftCorner": "Tx",
+                            "bottomRightCorner": "Zz",
+                            "horizontal": true,
+                            "show_label": false,
+                            "info": "Quantization amount of the timing of generations"
+                        },
+                        {
+                            "label": "Memory",
+                            "min": 0.0,
+                            "max": 1.0,
+                            "default": 0.5,
+                            "topLeftCorner": "Ba",
+                            "bottomRightCorner": "Cg",
+                            "show_label": false,
+                            "exclude_from_presets": true,
+                            "info": "Number of loops for a registered groove to be remembered before being removed"
+                        },
+                        {
+                            "label": "Groove Velocity",
+                            "min": 0.0,
+                            "max": 2.0,
+                            "default": 1.0,
+                            "topLeftCorner": "Oa",
+                            "bottomRightCorner": "Pf",
+                            "show_label": false,
+                            "exclude_from_presets": true,
+                            "info": "Changes the dynamic range of the velocity of the groove"
+                        },
+                        {
+                            "label": "Groove Offset",
+                            "min": 0.0,
+                            "max": 1.0,
+                            "default": 0.0,
+                            "topLeftCorner": "Qa",
+                            "bottomRightCorner": "Rf",
+                            "show_label": false,
+                            "exclude_from_presets": true,
+                            "info": "Offset Quantization amount of the instrumental groove"
+                        }
+                    ],
+                    "rotaries": [],
+                    "buttons": [
+                        {
+                            "label": "Adaptive Follow",
+                            "isToggle": true,
+                            "topLeftCorner": "Ki",
+                            "bottomRightCorner": "Nk",
+                            "default": 0,
+                            "show_label": true,
+                            "allow_reset_to_default": true,
+                            "exclude_from_presets": true,
+                            "image": "AdaptiveFollowOff.png",
+                            "image_pressed": "AdaptiveFollowOn.png",
+                            "info": "Press to adaptively adjust the follow amount"
+                        },
+                        {
+                            "label": "Adaptive Memory",
+                            "isToggle": true,
+                            "topLeftCorner": "Ag",
+                            "bottomRightCorner": "Di",
+                            "default": 1,
+                            "show_label": true,
+                            "allow_reset_to_default": true,
+                            "exclude_from_presets": true,
+                            "image": "AdaptiveMemoryOff.png",
+                            "image_pressed": "AdaptiveMemoryOn.png",
+                            "info": "Press to adaptively adjust the follow amount"
+                        },
+                        {
+                            "label": "Random A",
+                            "isToggle": false,
+                            "topLeftCorner": "Cq",
+                            "bottomRightCorner": "Et",
+                            "show_label": true,
+                            "exclude_from_presets": true,
+                            "image": "RandomAOff.png",
+                            "image_pressed": "RandomAOn.png",
+                            "info": "Press to randomize pattern A"
+                        },
+                        {
+                            "label": "Snap To A",
+                            "isToggle": false,
+                            "topLeftCorner": "Dt",
+                            "bottomRightCorner": "Gv",
+                            "exclude_from_presets": true,
+                            "show_label": true,
+                            "image": "SnapOff.png",
+                            "image_pressed": "SnapOn.png",
+                            "info": "Stores the current pattern here"
+                        },
+                        {
+                            "label": "Random B",
+                            "isToggle": false,
+                            "topLeftCorner": "Mq",
+                            "bottomRightCorner": "Ot",
+                            "show_label": true,
+                            "image": "RandomBOff.png",
+                            "image_pressed": "RandomBOn.png",
+                            "exclude_from_presets": true,
+                            "info": "Press to randomize pattern B"
+                        },
+                        {
+                            "label": "Snap To B",
+                            "isToggle": false,
+                            "topLeftCorner": "Kt",
+                            "bottomRightCorner": "Nv",
+                            "show_label": true,
+                            "image": "SnapOff.png",
+                            "image_pressed": "SnapOn.png",
+                            "info": "Stores the current pattern here",
+                            "exclude_from_presets": true
+                        },
+                        {
+                            "label": "Clear Groove",
+                            "isToggle": false,
+                            "topLeftCorner": "Da",
+                            "bottomRightCorner": "Ed",
+                            "image": "ClearOff.png",
+                            "image_pressed": "ClearOn.png",
+                            "info": "Press to clear the groove",
+                            "exclude_from_presets": true
+                        },
+                        {
+                            "label": "Genre 1",
+                            "topLeftCorner": "Qi",
+                            "bottomRightCorner": "Sk",
+                            "default": 1,
+                            "isToggle": true,
+                            "allow_reset_to_default": true,
+                            "image": "1Off.png",
+                            "image_pressed": "1On.png",
+                            "show_label": false
+                        },
+                        {
+                            "label": "Genre 2",
+                            "topLeftCorner": "Pk",
+                            "bottomRightCorner": "Rm",
+                            "isToggle": true,
+                            "image": "2Off.png",
+                            "image_pressed": "2On.png",
+                            "show_label": false
+                        },
+                        {
+                            "label": "Genre 3",
+                            "topLeftCorner": "Rk",
+                            "bottomRightCorner": "Tm",
+                            "image": "3Off.png",
+                            "image_pressed": "3On.png",
+                            "isToggle": true,
+                            "show_label": false
+                        },
+                        {
+                            "label": "Genre 4",
+                            "topLeftCorner": "Pm",
+                            "bottomRightCorner": "Ro",
+                            "image": "4Off.png",
+                            "image_pressed": "4On.png",
+                            "isToggle": true,
+                            "show_label": false
+                        },
+                        {
+                            "label": "Genre 5",
+                            "topLeftCorner": "Rm",
+                            "bottomRightCorner": "To",
+                            "image": "5Off.png",
+                            "image_pressed": "5On.png",
+                            "isToggle": true,
+                            "show_label": false
+                        },
+                        {
+                            "label": "Genre 6",
+                            "topLeftCorner": "Po",
+                            "bottomRightCorner": "Rq",
+                            "image": "6Off.png",
+                            "image_pressed": "6On.png",
+                            "isToggle": true,
+                            "show_label": false
+                        },
+                        {
+                            "label": "Genre 7",
+                            "topLeftCorner": "Ro",
+                            "bottomRightCorner": "Tq",
+                            "image": "7Off.png",
+                            "image_pressed": "7On.png",
+                            "isToggle": true,
+                            "show_label": false
+                        },
+                        {
+                            "label": "Genre 8",
+                            "topLeftCorner": "Pq",
+                            "bottomRightCorner": "Rs",
+                            "image": "8Off.png",
+                            "image_pressed": "8On.png",
+                            "isToggle": true,
+                            "show_label": false
+                        },
+                        {
+                            "label": "Genre 9",
+                            "topLeftCorner": "Rq",
+                            "bottomRightCorner": "Ts",
+                            "image": "9Off.png",
+                            "image_pressed": "9On.png",
+                            "isToggle": true,
+                            "show_label": false
+                        },
+                        {
+                            "label": "Mute Cymbals",
+                            "topLeftCorner": "Vi",
+                            "bottomRightCorner": "Xk",
+                            "show_label": true,
+                            "isToggle": true,
+                            "image": "CymbalsNotMute.png",
+                            "image_pressed": "CymbalsMute.png",
+                            "info": "Tries to re-interprets the generation with no kicks!"
+                        },
+                        {
+                            "label": "Redirect Cymbals",
+                            "topLeftCorner": "Ti",
+                            "bottomRightCorner": "Vk",
+                            "isToggle": true,
+                            "show_label": true,
+                            "image": "CymbalsNormal.png",
+                            "image_pressed": "CymbalsRedirected.png",
+                            "info": "Tries to re-interprets the generation with no cymbals (both crash and ride)!"
+                        },
+                        {
+                            "label": "Mute Toms",
+                            "topLeftCorner": "Vk",
+                            "bottomRightCorner": "Xm",
+                            "show_label": true,
+                            "image": "TomsNotMute.png",
+                            "image_pressed": "TomsMute.png",
+                            "isToggle": true,
+                            "info": "Tries to re-interprets the generation with no kicks!"
+                        },
+                        {
+                            "label": "Redirect Toms",
+                            "topLeftCorner": "Tk",
+                            "bottomRightCorner": "Vm",
+                            "isToggle": true,
+                            "show_label": true,
+                            "image": "SnaresHatsTomsNormal.png",
+                            "image_pressed": "SnaresHatsTomsRedirected.png",
+                            "info": "Tries to re-interprets the generation with no toms (low, mid and high)!"
+                        },
+                        {
+                            "label": "Mute Hats",
+                            "topLeftCorner": "Vm",
+                            "bottomRightCorner": "Xo",
+                            "show_label": true,
+                            "isToggle": true,
+                            "image": "HatsNotMute.png",
+                            "image_pressed": "HatsMute.png",
+                            "info": "Tries to re-interprets the generation with no kicks!"
+                        },
+                        {
+                            "label": "Redirect Hats",
+                            "topLeftCorner": "Tm",
+                            "bottomRightCorner": "Vo",
+                            "isToggle": true,
+                            "show_label": true,
+                            "image": "SnaresHatsTomsNormal.png",
+                            "image_pressed": "SnaresHatsTomsRedirected.png",
+                            "info": "Tries to re-interprets the generation with no hats (closed and open)!"
+                        },
+                        {
+                            "label": "Mute Snares",
+                            "topLeftCorner": "Vo",
+                            "bottomRightCorner": "Xq",
+                            "show_label": true,
+                            "image": "SnaresNotMute.png",
+                            "image_pressed": "SnaresMute.png",
+                            "isToggle": true,
+                            "info": "Tries to re-interprets the generation with no kicks!"
+                        },
+                        {
+                            "label": "Redirect Snares",
+                            "topLeftCorner": "To",
+                            "bottomRightCorner": "Vq",
+                            "isToggle": true,
+                            "show_label": true,
+                            "image": "SnaresHatsTomsNormal.png",
+                            "image_pressed": "SnaresHatsTomsRedirected.png",
+                            "info": "Tries to re-interprets the generation with no snares!"
+                        },
+                        {
+                            "label": "Mute Kicks",
+                            "topLeftCorner": "Vq",
+                            "bottomRightCorner": "Xs",
+                            "show_label": true,
+                            "image": "KicksNotMute.png",
+                            "image_pressed": "KicksMute.png",
+                            "isToggle": true,
+                            "info": "Tries to re-interprets the generation with no kicks!"
+                        },
+                        {
+                            "label": "Redirect Kicks",
+                            "topLeftCorner": "Tq",
+                            "bottomRightCorner": "Vs",
+                            "show_label": true,
+                            "image": "KicksNormal.png",
+                            "image_pressed": "KicksRedirected.png",
+                            "isToggle": true,
+                            "info": "Tries to re-interprets the generation with no kicks!"
+                        },
+                        {
+                            "label": "Immediate",
+                            "topLeftCorner": "Tv",
+                            "bottomRightCorner": "Vx",
+                            "isToggle": true,
+                            "show_label": true,
+                            "image": "ImmediateResponseOff.png",
+                            "image_pressed": "ImmediateResponseOn.png",
+                            "info": "When a note is received, it immediately regenerates the accompaniment",
+                            "exclude_from_presets": true
+                        },
+                        {
+                            "label": "1 Bar",
+                            "topLeftCorner": "Vv",
+                            "bottomRightCorner": "Xx",
+                            "isToggle": true,
+                            "show_label": true,
+                            "image": "1BarResponseOff.png",
+                            "image_pressed": "1BarResponseOn.png",
+                            "info": "When a note is received, it waits for the beginning of the next bar to regenerate the accompaniment",
+                            "exclude_from_presets": true
+                        },
+                        {
+                            "label": "2 Bar",
+                            "topLeftCorner": "Xv",
+                            "bottomRightCorner": "Zx",
+                            "isToggle": true,
+                            "show_label": true,
+                            "image": "2BarResponseOff.png",
+                            "image_pressed": "2BarResponseOn.png",
+                            "info": "When a note is received, it waits for the beginning of the next 2 bars to regenerate the accompaniment",
+                            "exclude_from_presets": true
+                        }
+                    ],
+                    "MidiDisplays": [
+                        {
+                            "label": "MidiVisualizerA",
+                            "topLeftCorner": "Av",
+                            "bottomRightCorner": "Iz",
+                            "allowToDragOutAsMidi": true,
+                            "allowToDragInMidi": false,
+                            "needsPlayhead": true,
+                            "PlayheadLoopDurationQuarterNotes": 8.0,
+                            "info": "Pattern associated with state A",
+                            "custom_voices": ["Kick", "Snare", "Chat", "Ohat", "Low Tom", "Mid Tom", "High Tom", "Crash", "Ride"],
+                            "custom_pitches": [36, 38, 42, 46, 41, 48, 45, 49, 51],
+                            "show_grid": true
+                        },
+                        {
+                            "label": "MidiVisualizerB",
+                            "topLeftCorner": "Iv",
+                            "bottomRightCorner": "Qz",
+                            "allowToDragOutAsMidi": true,
+                            "allowToDragInMidi": false,
+                            "needsPlayhead": true,
+                            "PlayheadLoopDurationQuarterNotes": 8.0,
+                            "info": "Pattern associated with state B",
+                            "custom_voices": ["Kick", "Snare", "Chat", "Ohat", "Low Tom", "Mid Tom", "High Tom", "Crash", "Ride"],
+                            "custom_pitches": [36, 38, 42, 46, 41, 48, 45, 49, 51],
+                            "show_grid": true
+                        },
+                        {
+                            "label": "MidiVisualizerGroove2Drum",
+                            "topLeftCorner": "Dd",
+                            "bottomRightCorner": "Nh",
+                            "allowToDragOutAsMidi": true,
+                            "allowToDragInMidi": false,
+                            "needsPlayhead": true,
+                            "PlayheadLoopDurationQuarterNotes": 8.0,
+                            "info": "Pattern associated only with the your playing",
+                            "custom_voices": ["Kick", "Snare", "Chat", "Ohat", "Low Tom", "Mid Tom", "High Tom", "Crash", "Ride"],
+                            "custom_pitches": [36, 38, 42, 46, 41, 48, 45, 49, 51],
+                            "show_grid": true
+                        },
+                        {
+                            "label": "MidiVisualizerGroove",
+                            "topLeftCorner": "Db",
+                            "bottomRightCorner": "Nd",
+                            "allowToDragOutAsMidi": true,
+                            "allowToDragInMidi": false,
+                            "needsPlayhead": true,
+                            "PlayheadLoopDurationQuarterNotes": 8.0,
+                            "info": "Instrumental groove associated with your playing",
+                            "isOnsetVisualizer": true,
+                            "show_grid": true
+                        }
+                    ],
+                    "labels": [
+                        {
+                            "label": "Max Follow",
+                            "topLeftCorner": "Kl",
+                            "bottomRightCorner": "Nm",
+                            "font_size": 12
+                        },
+                        {
+                            "label": "Groove",
+                            "topLeftCorner": "Gg",
+                            "bottomRightCorner": "Kg",
+                            "font_size": 18
+                        },
+                        {
+                            "label": "Forget\nASAP",
+                            "topLeftCorner": "Af",
+                            "bottomRightCorner": "Dg",
+                            "font_size": 8
+                        },
+                        {
+                            "label": "Never\nForget",
+                            "topLeftCorner": "Aa",
+                            "bottomRightCorner": "Db",
+                            "font_size": 8
+                        },
+                        {
+                            "label": "Groove\nVelocity",
+                            "topLeftCorner": "Nf",
+                            "bottomRightCorner": "Qg",
+                            "font_size": 10
+                        },
+                        {
+                            "label": "Off ",
+                            "topLeftCorner": "Ne",
+                            "bottomRightCorner": "Qf",
+                            "font_size": 9
+                        },
+                        {
+                            "label": "x 1 ",
+                            "topLeftCorner": "Nc",
+                            "bottomRightCorner": "Qd",
+                            "font_size": 9
+                        },
+                        {
+                            "label": "Max ",
+                            "topLeftCorner": "Na",
+                            "bottomRightCorner": "Qb",
+                            "font_size": 9
+                        },
+                        {
+                            "label": "Quantize\nTiming",
+                            "topLeftCorner": "Pf",
+                            "bottomRightCorner": "Sg",
+                            "font_size": 10
+                        },
+                        {
+                            "label": "0 %",
+                            "topLeftCorner": "Qe",
+                            "bottomRightCorner": "Rf",
+                            "font_size": 9
+                        },
+                        {
+                            "label": "100%  ",
+                            "topLeftCorner": "Qa",
+                            "bottomRightCorner": "Rb",
+                            "font_size": 9
+                        },
+                        {
+                            "label": "A",
+                            "topLeftCorner": "Dr",
+                            "bottomRightCorner": "Et",
+                            "info": "Pattern A",
+                            "font_size": 18
+                        },
+                        {
+                            "label": "B",
+                            "topLeftCorner": "Mr",
+                            "bottomRightCorner": "Nt",
+                            "info": "Pattern B",
+                            "font_size": 18
+                        },
+                        {
+                            "label": "Groove",
+                            "topLeftCorner": "Gh",
+                            "bottomRightCorner": "Ki",
+                            "info": "Pattern associated with the groove"
+                        },
+                        {
+                            "label": "",
+                            "topLeftCorner": "Vq",
+                            "bottomRightCorner": "Zs",
+                            "font_size": 14
+                        },
+                        {
+                            "label": "Generation Quantization",
+                            "topLeftCorner": "Tx",
+                            "bottomRightCorner": "Zz",
+                            "font_size": 12
+                        },
+                        {
+                            "label": "Style Template ",
+                            "topLeftCorner": "Ph",
+                            "bottomRightCorner": "Ti",
+                            "font_size": 14
+                        },
+                        {
+                            "label": "Voicing",
+                            "topLeftCorner": "Th",
+                            "bottomRightCorner": "Xi",
+                            "font_size": 14
+                        },
+                        {
+                            "label": "AB Oscillation Rate",
+                            "topLeftCorner": "Gt",
+                            "bottomRightCorner": "Kv",
+                            "font_size": 14
+                        }
+                    ],
+                    "lines": [
+                        {
+                            "start": "Th",
+                            "end": "Ts"
+                        },
+                        {
+                            "start": "Xh",
+                            "end": "Xs"
+                        },
+                        {
+                            "start": "Xh",
+                            "end": "Th"
+                        },
+                        {
+                            "start": "Gg",
+                            "end": "Hh"
+                        },
+                        {
+                            "start": "Ts",
+                            "end": "Xs"
+                        },
+                        {
+                            "start": "Hh",
+                            "end": "Hi"
+                        },
+                        {
+                            "start": "Hi",
+                            "end": "Ji"
+                        },
+                        {
+                            "start": "Ji",
+                            "end": "Jh"
+                        },
+                        {
+                            "start": "Jh",
+                            "end": "Kg"
+                        },
+                        {
+                            "start": "Ph",
+                            "end": "Ps"
+                        },
+                        {
+                            "start": "Th",
+                            "end": "Ts"
+                        },
+                        {
+                            "start": "Ph",
+                            "end": "Th"
+                        },
+                        {
+                            "start": "Pi",
+                            "end": "Xi"
+                        },
+                        {
+                            "start": "Ps",
+                            "end": "Ts"
+                        }
+                    ],
+                    "triangleSliders": [
+                        {
+                            "label": "Interpolation Area",
+                            "topLeftCorner": "Di",
+                            "bottomRightCorner": "Nt",
+                            "DistanceFromBottomLeftCornerSlider": "Interpolate",
+                            "HeightSlider": "Follow",
+                            "ensure_equilateral": true,
+                            "info": "Area in which the interpolation happens. Lower = more interpolation, Higher = more groove"
+                        }
+                    ],
+                    "AudioDisplays": [
+                        {
+                            "label": "AudioDroppedVisualizer",
+                            "topLeftCorner": "Ea",
+                            "bottomRightCorner": "Nb",
+                            "allowToDragOutAsAudio": true,
+                            "allowToDragInAudio": true,
+                            "needsPlayhead": true,
+                            "PlayheadLoopDurationQuarterNotes": 8.0,
+                            "info": "Audio Visualization"
+                        }
+                    ],
+                    "comboBoxes": [
+                        {
+                            "label": "Model",
+                            "topLeftCorner": "Rc",
+                            "bottomRightCorner": "Xd",
+                            "items": [ "0.2Beta", "0.5Beta", "1.0Beta" ],
+                            "info": "We recommend using V2 for the best experience",
+                            "exclude_from_presets": false,
+                            "allow_reset_to_default": false
+                        }
+                    ]
+                },
+                {
+                    "name": "Midi Mappings",
+                    "rotaries": [
+                        {
+                            "label": "Kick",
+                            "min": 0,
+                            "max": 127,
+                            "default": 36,
+                            "topLeftCorner": "Cc",
+                            "bottomRightCorner": "Gi",
+                            "show_label": true,
+                            "is_int": true
+                        },
+                        {
+                            "label": "Snare",
+                            "min": 0,
+                            "max": 127,
+                            "default": 38,
+                            "topLeftCorner": "Hc",
+                            "bottomRightCorner": "Li",
+                            "show_label": true,
+                            "is_int": true
+                        },
+                        {
+                            "label": "ClosedHat",
+                            "min": 0,
+                            "max": 127,
+                            "default": 42,
+                            "topLeftCorner": "Pc",
+                            "bottomRightCorner": "Ti",
+                            "show_label": true,
+                            "is_int": true
+                        },
+                        {
+                            "label": "OpenHat",
+                            "min": 0,
+                            "max": 127,
+                            "default": 46,
+                            "topLeftCorner": "Vc",
+                            "bottomRightCorner": "Yi",
+                            "show_label": true,
+                            "is_int": true
+                        },
+                        {
+                            "label": "LowTom",
+                            "min": 0,
+                            "max": 127,
+                            "default": 41,
+                            "topLeftCorner": "Cm",
+                            "bottomRightCorner": "Gs",
+                            "show_label": true,
+                            "is_int": true
+                        },
+                        {
+                            "label": "MidTom",
+                            "min": 0,
+                            "max": 127,
+                            "default": 48,
+                            "topLeftCorner": "Hm",
+                            "bottomRightCorner": "Ls",
+                            "show_label": true,
+                            "is_int": true
+                        },
+                        {
+                            "label": "HighTom",
+                            "min": 0,
+                            "max": 127,
+                            "default": 45,
+                            "topLeftCorner": "Pm",
+                            "bottomRightCorner": "Ts",
+                            "show_label": true,
+                            "is_int": true
+                        },
+                        {
+                            "label": "Crash",
+                            "min": 0,
+                            "max": 127,
+                            "default": 49,
+                            "topLeftCorner": "Vm",
+                            "bottomRightCorner": "Ys",
+                            "show_label": true,
+                            "is_int": true
+                        },
+                        {
+                            "label": "Ride",
+                            "min": 0,
+                            "max": 127,
+                            "default": 51,
+                            "topLeftCorner": "Lt",
+                            "bottomRightCorner": "Pz",
+                            "show_label": true,
+                            "is_int": true
+                        }
+                    ]
+                }
+            ]
+        },
+
+        "MidiInVisualizer": {
+            "enable": false,
+            "allowToDragInMidi": false,
+            "visualizeIncomingMidiFromHost": true,
+            "deletePreviousIncomingMidiMessagesOnBackwardPlayhead": true,
+            "deletePreviousIncomingMidiMessagesOnRestart": true
+        },
+
+        "GeneratedContentVisualizer": {
+            "enable": true,
+            "allowToDragOutAsMidi": true
+        }
+
+    },
+
+    "StandaloneTransportPanel": {
+        "enable": true,
+        "disableInPluginMode": true,
+        "exclude_tempo_from_presets": true,
+        "exclude_time_signature_from_presets": true,
+        "exclude_record_button_from_presets": true,
+        "exclude_play_button_from_presets": true
+    },
+
+    "VirtualMidiOut": {
+        "enable": false
+    },
+
+    "event_communication_settings": {
+        "SendEventAtBeginningOfNewBuffers_FLAG": true,
+        "SendEventForNewBufferIfMetadataChanged_FLAG": false,
+        "SendNewBarEvents_FLAG": false,
+        "SendTimeShiftEvents_FLAG": false,
+        "delta_TimeShiftEventRatioOfQuarterNote": 0.5,
+        "FilterNoteOnEvents_FLAG": false,
+        "FilterNoteOffEvents_FLAG": false,
+        "FilterCCEvents_FLAG": false
+    },
+
+    "deploy_method_min_wait_time_between_iterations": 0,
+
+    "debugging_settings": {
+        "DeploymentThread": {
+            "print_received_gui_params": false,
+            "print_manually_dropped_midi_messages": false,
+            "print_input_events": false,
+            "print_deploy_method_time": false,
+            "disable_user_print_requests": false
+        },
+        "ProcessorThread": {
+            "print_start_stop_times": false,
+            "print_new_buffer_started": false,
+            "print_generation_policy_reception": false,
+            "print_generation_stream_reception": false,
+            "disableAllPrints": false
+        }
+    },
+
+    "needs_audio": true
+
+}
+
