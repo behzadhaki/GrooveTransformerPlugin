@@ -154,7 +154,7 @@ public:
         // Try loading the model if it hasn't been loaded yet
         if (!isModelLoaded) {
             // load the model
-            load("mute_genre_latent_vae_beta_0_5.pt");
+            load(model_path);
 
             if (no_presets_received_yet) {
                 encodeGroove();
@@ -183,8 +183,6 @@ public:
             auto onset_saliences = ddc_onset_model.forward(in);
 
         }
-
-
 
         /*auto dropped_audio = audioVisualizersData->get_visualizer_data("AudioDroppedVisualizer");
         if ( dropped_audio != std::nullopt) {
@@ -216,14 +214,28 @@ public:
             // check if a new preset was loaded and update the tensors accordingly
             auto new_presets_loaded = new_preset_loaded_since_last_call ? loadTensorsFromPreset() : false;
 
-            if (new_presets_loaded) {
-
+            // check if model selection was changed
+            bool new_model_selected = false;
+            if (gui_params_changed_since_last_call) {
+                auto m_path_selected = gui_params.getComboBoxSelectionText("Model");
+                if (m_path_selected == "0.2Beta") {
+                    m_path_selected = "mute_genre_latent_vae_beta_0_2.pt";
+                } else if (m_path_selected == "0.5Beta") {
+                    m_path_selected = "mute_genre_latent_vae_beta_0_5.pt";
+                } else if (m_path_selected == "1.0Beta") {
+                    m_path_selected = "mute_genre_latent_vae_beta_1_0.pt";
+                }
+                if (m_path_selected != model_path) {
+                    model_path = m_path_selected;
+                    load(model_path);
+                    new_model_selected = true;
+                }
             }
 
             // update groove if new host event is available
             auto groove_just_updated =
                 grooveUpdated(new_event_from_host, new_presets_loaded);
-            groove_has_been_updated = groove_has_been_updated || groove_just_updated; // this is used to track if groove has been updated (in case of responsiveness > 0)
+            groove_has_been_updated = groove_has_been_updated || groove_just_updated || new_model_selected; // this is used to track if groove has been updated (in case of responsiveness > 0)
 
             // re-encode the groove
             auto finished_encoding_groove = false;
@@ -299,6 +311,7 @@ private:
     bool auto_move_enabled = false;
     float last_move_ppq = -10.0f;
 
+    std::string model_path = "mute_genre_latent_vae_beta_0_5.pt";
 
     // Ring buffer for storing the hits 2-bar previous to the playhead
     std::array<int, 16> hit_memory_buffer = {};
@@ -409,7 +422,6 @@ private:
 
         return loaded;
     }
-
 
 
     // checks if a new host event has been received and
@@ -910,6 +922,7 @@ private:
         return changed;
 
     }
+
     // update selected genre
     bool updateGenreSelection() {
 

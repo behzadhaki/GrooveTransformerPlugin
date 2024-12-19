@@ -6,7 +6,7 @@
         "height": 740,
 
         "Tabs": {
-            "show_grid": true,
+            "show_grid": false,
             "draw_borders_for_components": false,
             "tabList": [
                 {
@@ -42,7 +42,7 @@
                             "max": 1.0,
                             "default": 0,
                             "topLeftCorner": "Tx",
-                            "bottomRightCorner": "Zz",
+                            "bottomRightCorner": "Zy",
                             "horizontal": true,
                             "show_label": false,
                             "info": "Quantization amount of the timing of generations"
@@ -529,7 +529,7 @@
                         {
                             "label": "Generation Quantization",
                             "topLeftCorner": "Tx",
-                            "bottomRightCorner": "Zz",
+                            "bottomRightCorner": "Zy",
                             "font_size": 12
                         },
                         {
@@ -635,8 +635,8 @@
                     "comboBoxes": [
                         {
                             "label": "Model",
-                            "topLeftCorner": "Rc",
-                            "bottomRightCorner": "Xd",
+                            "topLeftCorner": "Ty",
+                            "bottomRightCorner": "Zz",
                             "items": [ "0.2Beta", "0.5Beta", "1.0Beta" ],
                             "info": "We recommend using V2 for the best experience",
                             "exclude_from_presets": false,
