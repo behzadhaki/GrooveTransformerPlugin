@@ -8,7 +8,6 @@
 #include "../Includes/GuiParameters.h"
 #include "../Includes/InputEvent.h"
 #include "../Includes/LockFreeQueue.h"
-#include "../Includes/Configs_Model.h"
 #include "../Includes/colored_cout.h"
 
 #include "../Includes/GenerationEvent.h"
@@ -72,6 +71,22 @@ public:
         CustomPresetData; // data stored here will be saved automatically when the plugin is saved/loaded/preset changed
     //    mutable std::mutex  preset_loaded_mutex;
     //    bool newPresetLoaded{false};
+
+    // ============================================================================================================
+    // ===          Utility Methods
+    // ============================================================================================================
+    static std::string GetPluginDirectory() {
+        juce::File pluginPath = juce::File::getSpecialLocation(juce::File::currentExecutableFile);
+        return pluginPath.getParentDirectory().getFullPathName().toStdString();
+
+    }
+
+    static std::string getUserDirectory()
+    {
+        // Get the user's home directory
+        juce::File homeDirectory = juce::File::getSpecialLocation(juce::File::userHomeDirectory);
+        return  homeDirectory.getFullPathName().toStdString();
+    }
 
 protected:
     // ============================================================================================================

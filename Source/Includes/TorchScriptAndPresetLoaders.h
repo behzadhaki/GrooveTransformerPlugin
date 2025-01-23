@@ -3,17 +3,9 @@
 //
 
 # pragma once
+#include "resourceManager.h"
 
 
-#define STRINGIFY(x) #x
-#define TOSTRING(x) STRINGIFY(x)
-inline const char* default_processing_scripts_path = TOSTRING(DEFAULT_PROCESSING_SCRIPTS_DIR);
-inline const char* default_preset_dir = TOSTRING(DEFAULT_PRESET_DIR);
-#if defined(_WIN32) || defined(_WIN64)
-inline const char* path_separator = R"(\)";
-#else
-inline const char* path_separator = "/";
-#endif
 
 inline std::string stripQuotes(const std::string &input) {
     if (input.size() < 2) return input;

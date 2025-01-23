@@ -19,11 +19,16 @@ target_sources(${BaseTargetName} PRIVATE
 
 set(TORCH_VERSION 2.0.1)
 
+# print two blank lines then $ENV{HOME}
+message(STATUS "\n\n$ENV{HOME}\n\n")
+
 # Libtorch Installation Path for Windows and MacOS
 if(MSVC)
     set(LIBTORCH_INSTALL_DIR "C:/libtorch-${TORCH_VERSION}-${CMAKE_BUILD_TYPE}")
     find_package(Torch HINTS ${LIBTORCH_INSTALL_DIR})
 else()
+    # get username
+    add_definitions(-DUSER_NAME=$ENV{USER})
     set(LIBTORCH_INSTALL_DIR "$ENV{HOME}/Library/libtorch-${TORCH_VERSION}-${CMAKE_BUILD_TYPE}")
     find_package(Torch HINTS "${LIBTORCH_INSTALL_DIR}/libtorch")
 endif()
@@ -190,15 +195,16 @@ target_include_directories(${BaseTargetName} PRIVATE "${TORCH_INCLUDE_DIRS}")
 # Copying the TorchScripts directory and all its contents
 if(WIN32)
     file(COPY "${CMAKE_SOURCE_DIR}/TorchScripts" DESTINATION "C:/${BaseTargetName}")
-    set(TARGET_DIR "C:\\${BaseTargetName}")
-    add_definitions(-DDEFAULT_MODEL_DIR="C:\\${BaseTargetName}\\TorchScripts\\Models")
-    add_definitions(-DDEFAULT_PROCESSING_SCRIPTS_DIR="C:\\${BaseTargetName}\\TorchScripts\\ProcessingScripts")
-    set(DEFAULT_PRESET_DIR "C:\\${BaseTargetName}\\Presets")
-    add_definitions(-DDEFAULT_PRESET_DIR="C:\\${BaseTargetName}\\Presets")
+    set(ROOT_INSTALL_DIR "C")
+    set(TARGET_DIR "${ROOT_INSTALL_DIR}:\\${BaseTargetName}")
+    add_definitions(-DDEFAULT_MODEL_DIR="${ROOT_INSTALL_DIR}:\\${BaseTargetName}\\TorchScripts\\Models")
+    add_definitions(-DDEFAULT_PROCESSING_SCRIPTS_DIR="${ROOT_INSTALL_DIR}:\\${BaseTargetName}\\TorchScripts\\ProcessingScripts")
+    set(DEFAULT_PRESET_DIR "${ROOT_INSTALL_DIR}:\\${BaseTargetName}\\Presets")
+    add_definitions(-DDEFAULT_PRESET_DIR="${ROOT_INSTALL_DIR}:\\${BaseTargetName}\\Presets")
     message(STATUS "BaseTargetName (Windows): ${BaseTargetName}")
     # create a directory for the json settings file called "GUI", move the settings file there
-    file(MAKE_DIRECTORY "C:\\${BaseTargetName}\\GUI")
-    file(COPY "${CMAKE_SOURCE_DIR}/PluginCode/settings.json" DESTINATION "C:\\${BaseTargetName}\\GUI")
+    file(MAKE_DIRECTORY "${ROOT_INSTALL_DIR}:\\${BaseTargetName}\\GUI")
+    file(COPY "${CMAKE_SOURCE_DIR}/PluginCode/settings.json" DESTINATION "${ROOT_INSTALL_DIR}:\\${BaseTargetName}\\GUI")
 
     # Provide a path to settings.json file
     # Define DEFAULT_SETTINGS_FILE_PATH
@@ -208,19 +214,19 @@ if(WIN32)
     # move the entire PluginCode/img directory to GUI/img (the img directory exists
     # in the PluginCode directory)
     if(EXISTS "${CMAKE_SOURCE_DIR}/PluginCode/img")
-        file(COPY "${CMAKE_SOURCE_DIR}/PluginCode/img" DESTINATION "C:\\${BaseTargetName}\\GUI")
+        file(COPY "${CMAKE_SOURCE_DIR}/PluginCode/img" DESTINATION "${ROOT_INSTALL_DIR}:\\${BaseTargetName}\\GUI")
     endif()
 
     # move all files in the Source/Images directory to GUI/img as well
     if(EXISTS "${CMAKE_SOURCE_DIR}/Source/Images")
         file(GLOB_RECURSE IMAGES "${CMAKE_SOURCE_DIR}/Source/Images/*")
         foreach(IMAGE ${IMAGES})
-            file(COPY ${IMAGE} DESTINATION "C:\\${BaseTargetName}\\GUI\\img")
+            file(COPY ${IMAGE} DESTINATION "${ROOT_INSTALL_DIR}:\\${BaseTargetName}\\GUI\\img")
         endforeach()
     endif()
 
     # provide a path to the image directory
-    add_definitions(-DDEFAULT_IMG_DIR="C:\\${BaseTargetName}\\GUI\\img")
+    add_definitions(-DDEFAULT_IMG_DIR="${ROOT_INSTALL_DIR}:\\${BaseTargetName}\\GUI\\img")
 
     # No need for platform-specific path formatting
     add_definitions(-DDEFAULT_SETTINGS_FILE_PATH="C:/${BaseTargetName}/GUI/settings.json")
@@ -230,7 +236,8 @@ if(WIN32)
 
 
 elseif(APPLE OR UNIX)
-    set(TARGET_DIR "$ENV{HOME}/Library/${BaseTargetName}")
+    set(ROOT_INSTALL_DIR "$ENV{HOME}/Library")
+    set(TARGET_DIR "${ROOT_INSTALL_DIR}/Library/${BaseTargetName}")
     file(COPY "${CMAKE_SOURCE_DIR}/TorchScripts" DESTINATION "${TARGET_DIR}")
     add_definitions(-DDEFAULT_MODEL_DIR="${TARGET_DIR}/TorchScripts/Models")
     add_definitions(-DDEFAULT_PROCESSING_SCRIPTS_DIR="${TARGET_DIR}/TorchScripts/ProcessingScripts")
@@ -270,6 +277,10 @@ elseif(APPLE OR UNIX)
     add_definitions(-DDEFAULT_SETTINGS_FILE_PATH="${DEFAULT_SETTINGS_PATH}")
 
 endif()
+
+# Root install directory is where the resources are stored during compilation (to be replaced with user specified paths in runtime)
+# see Source/Includes/resourceManager.h
+add_definitions(-DROOT_INSTALL_DIR="${ROOT_INSTALL_DIR}")
 
 # Create PRESET_DIR if it does not exist
 if(NOT EXISTS "${DEFAULT_PRESET_DIR}")

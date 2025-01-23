@@ -6,18 +6,6 @@
 
 #pragma once
 
-#define STRINGIFY(x) #x
-#define TOSTRING(x) STRINGIFY(x)
-
-//// -----------------  DO NOT CHANGE THE FOLLOWING -----------------
-//#if defined(_WIN32) || defined(_WIN64)
-//inline const char* images_folder = TOSTRING(DEFAULT_IMG_DIR);
-//inline const char* path_separator_ = R"(\)";
-//#else
-//inline const char* images_folder = TOSTRING(DEFAULT_IMG_DIR);
-//inline const char* path_separator_ = "/";
-//#endif
-
 using json = nlohmann::json; // Alias for convenience
 using namespace juce;
 
@@ -121,7 +109,7 @@ private:
     static std::string getImagePath(const std::string& image_name) {
         // Creates the path depending on the OS
         std::string img_path_ = stripQuotes(std::string(images_folder)) +
-                                std::string(path_separator_) +
+                                std::string(path_separator) +
                                 image_name;
         return img_path_;
     }

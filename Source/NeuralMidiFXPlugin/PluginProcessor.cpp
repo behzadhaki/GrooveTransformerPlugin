@@ -1,5 +1,6 @@
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
+#include "../Includes/resourceManager.h"
 
 using namespace std;
 using namespace debugging_settings::ProcessorThread;
