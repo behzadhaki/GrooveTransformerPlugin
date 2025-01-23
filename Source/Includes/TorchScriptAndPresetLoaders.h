@@ -16,7 +16,7 @@ inline std::string stripQuotes(const std::string &input) {
 }
 
 inline torch::jit::Module load_processing_script(const std::string& script_name) {
-    std::string script_path = stripQuotes(std::string(default_processing_scripts_path)) +
+    std::string script_path = std::string(get_processing_scripts_folder()) +
                               std::string(path_separator) +
                               script_name;
 
@@ -76,7 +76,7 @@ inline void save_tensor_map(const std::map<std::string, torch::Tensor>& m, const
 
 
 inline std::map<std::string, torch::Tensor> load_tensor_map(const std::string& file_name) {
-    std::string fp = stripQuotes(default_preset_dir) + path_separator + file_name;
+    std::string fp = std::string (get_preset_folder()) + path_separator + file_name;
     std::ifstream in_file(fp, std::ios::in | std::ios::binary);
     std::map<std::string, torch::Tensor> m;
 

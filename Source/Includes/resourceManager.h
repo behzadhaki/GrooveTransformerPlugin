@@ -13,109 +13,54 @@ inline const char* path_separator = R"(\)";
 inline const char* path_separator = "/";
 #endif
 
-inline const char* cmake_root_install_dir = TOSTRING(ROOT_INSTALL_DIR);
-inline const char* cmake_user_name = TOSTRING(USER_NAME);
-inline const char* cmake_images_folder = TOSTRING(DEFAULT_IMG_DIR);
-inline const char* cmake_model_path = TOSTRING(DEFAULT_MODEL_DIR);
-inline const char* cmake_processing_scripts_path = TOSTRING(DEFAULT_PROCESSING_SCRIPTS_DIR);
-inline const char* cmake_preset_dir = TOSTRING(DEFAULT_PRESET_DIR);
+inline const char* cmake_app_name = TOSTRING(APP_NAME);
+//inline const char* cmake_user_name = TOSTRING(USER_NAME);
+//inline const char* cmake_images_folder = TOSTRING(DEFAULT_IMG_DIR);
+//inline const char* cmake_model_path = TOSTRING(DEFAULT_MODEL_DIR);
+//inline const char* cmake_processing_scripts_path = TOSTRING(DEFAULT_PROCESSING_SCRIPTS_DIR);
+//inline const char* cmake_preset_dir = TOSTRING(DEFAULT_PRESET_DIR);
 
-static std::string GetPluginDirectory() {
-    juce::File pluginPath = juce::File::getSpecialLocation(juce::File::currentExecutableFile);
-    return pluginPath.getParentDirectory().getFullPathName().toStdString();
 
-}
+inline juce::File get_appSupportFolder() {
+    juce::File appSupportFolder;
 
-static std::string getUserDirectory() {
-    // Get the user's home directory
-    juce::File homeDirectory = juce::File::getSpecialLocation(juce::File::userHomeDirectory);
-    return  homeDirectory.getFullPathName().toStdString();
-}
-
-static std::string getCurrentUserName() {
-    auto user_dir = SystemStats::getFullUserName();
-    return user_dir.toStdString();
+    if (juce::SystemStats::getOperatingSystemType() & juce::SystemStats::OperatingSystemType::Linux) {
+        appSupportFolder = juce::File::getSpecialLocation(juce::File::userHomeDirectory).getChildFile(".local/share");
+    } else {
+        appSupportFolder = juce::File::getSpecialLocation(juce::File::commonApplicationDataDirectory);
+    }
+    return appSupportFolder;
 }
 
 static char* get_images_folder() {
-    // Prepare folder path and replace placeholder with the current username
-    std::string img_folder = std::string(cmake_images_folder); // Assuming cmake_images_folder is defined
-    std::string cmake_user_name_ = std::string(cmake_user_name); // Assuming cmake_user_name is defined
-    std::string current_user_name = getCurrentUserName(); // Retrieve current username
-
-    // Replace cmake_user_name with current_user_name in img_folder
-    size_t pos = img_folder.find(cmake_user_name_);
-    if (pos != std::string::npos) {
-        img_folder.replace(pos, cmake_user_name_.length(), current_user_name);
-    }
-
-    // Convert std::string back to char* for return (C-style string)
-    char* result = new char[img_folder.length() + 1];
-    std::strcpy(result, img_folder.c_str());
-
-    return result; // Caller is responsible for freeing the allocated memory
+    auto appSupportFolder = get_appSupportFolder();
+    // images folder is in the appSupportFolder/app_name/GUI/img
+    juce::String images_folder = appSupportFolder.getFullPathName() + path_separator + juce::String(cmake_app_name) + path_separator + "GUI" + path_separator + "img";
+    auto images_folder_str = images_folder.toStdString();
+    return (char*)images_folder.toStdString().c_str();
 }
 
-static char* get_model_path() {
-    // Prepare folder path and replace placeholder with the current username
-    std::string model_path = std::string(cmake_model_path); // Assuming cmake_model_path is defined
-    std::string cmake_user_name_ = std::string(cmake_user_name); // Assuming cmake_user_name is defined
-    std::string current_user_name = getCurrentUserName(); // Retrieve current username
-
-    // Replace cmake_user_name with current_user_name in model_path
-    size_t pos = model_path.find(cmake_user_name_);
-    if (pos != std::string::npos) {
-        model_path.replace(pos, cmake_user_name_.length(), current_user_name);
-    }
-
-    // Convert std::string back to char* for return (C-style string)
-    char* result = new char[model_path.length() + 1];
-    std::strcpy(result, model_path.c_str());
-
-    return result; // Caller is responsible for freeing the allocated memory
+static char* get_models_folder() {
+    auto appSupportFolder = get_appSupportFolder();
+    // images folder is in the appSupportFolder/app_name/TorchScripts/Models
+    juce::String models_folder = appSupportFolder.getFullPathName() + path_separator + juce::String(cmake_app_name) + path_separator + "TorchScripts" + path_separator + "Models";
+    auto models_folder_str = models_folder.toStdString();
+    return (char*)models_folder.toStdString().c_str();
 }
 
-static char* get_processing_scripts_path() {
-    // Prepare folder path and replace placeholder with the current username
-    std::string processing_scripts_path = std::string(cmake_processing_scripts_path); // Assuming cmake_processing_scripts_path is defined
-    std::string cmake_user_name_ = std::string(cmake_user_name); // Assuming cmake_user_name is defined
-    std::string current_user_name = getCurrentUserName(); // Retrieve current username
-
-    // Replace cmake_user_name with current_user_name in processing_scripts_path
-    size_t pos = processing_scripts_path.find(cmake_user_name_);
-    if (pos != std::string::npos) {
-        processing_scripts_path.replace(pos, cmake_user_name_.length(), current_user_name);
-    }
-
-    // Convert std::string back to char* for return (C-style string)
-    char* result = new char[processing_scripts_path.length() + 1];
-    std::strcpy(result, processing_scripts_path.c_str());
-
-    return result; // Caller is responsible for freeing the allocated memory
+static char* get_processing_scripts_folder() {
+    auto appSupportFolder = get_appSupportFolder();
+    // images folder is in the appSupportFolder/app_name/TorchScripts/ProcessingScripts
+    juce::String processing_scripts_folder = appSupportFolder.getFullPathName() + path_separator + juce::String(cmake_app_name) + path_separator + "TorchScripts" + path_separator + "ProcessingScripts";
+    auto processing_scripts_folder_str = processing_scripts_folder.toStdString();
+    return (char*)processing_scripts_folder.toStdString().c_str();
 }
 
-static char* get_preset_dir() {
-    // Prepare folder path and replace placeholder with the current username
-    std::string preset_dir = std::string(cmake_preset_dir); // Assuming cmake_preset_dir is defined
-    std::string cmake_user_name_ = std::string(cmake_user_name); // Assuming cmake_user_name is defined
-    std::string current_user_name = getCurrentUserName(); // Retrieve current username
-
-    // Replace cmake_user_name with current_user_name in preset_dir
-    size_t pos = preset_dir.find(cmake_user_name_);
-    if (pos != std::string::npos) {
-        preset_dir.replace(pos, cmake_user_name_.length(), current_user_name);
-    }
-
-    // Convert std::string back to char* for return (C-style string)
-    char* result = new char[preset_dir.length() + 1];
-    std::strcpy(result, preset_dir.c_str());
-
-    return result; // Caller is responsible for freeing the allocated memory
+static char* get_preset_folder() {
+    auto appSupportFolder = get_appSupportFolder();
+    // images folder is in the appSupportFolder/app_name/Preset
+    juce::String preset_folder = appSupportFolder.getFullPathName() + path_separator + juce::String(cmake_app_name) + path_separator + "Presets";
+    auto preset_folder_str = preset_folder.toStdString();
+    return (char*)preset_folder.toStdString().c_str();
 }
 
-
-// images_folder, default_model_path, default_processing_scripts_path, default_preset_dir
-inline const char*  images_folder = get_images_folder();
-inline const char*  default_model_path = get_model_path();
-inline const char*  default_processing_scripts_path = get_processing_scripts_path();
-inline const char*  default_preset_dir = get_preset_dir();

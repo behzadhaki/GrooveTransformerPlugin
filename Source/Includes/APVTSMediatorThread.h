@@ -481,8 +481,8 @@ public:
     // ============================================================================================================
     void load_preset(const int preset_idx, bool force_push_preset) {
         // XML file paths
-        std::string fp = stripQuotes(default_preset_dir) + path_separator + std::to_string(preset_idx) + ".apvts";
-        std::string fp_data = stripQuotes(default_preset_dir) + path_separator + std::to_string(preset_idx) + ".preset_data";
+        std::string fp = std::string (get_preset_folder()) + path_separator + std::to_string(preset_idx) + ".apvts";
+        std::string fp_data = std::string (get_preset_folder()) + path_separator + std::to_string(preset_idx) + ".preset_data";
 
         // Step 1: Read the XML from the file
         auto xml = juce::XmlDocument::parse(juce::File(fp));

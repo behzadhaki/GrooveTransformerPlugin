@@ -144,7 +144,7 @@ public:
     void savePresetNames()
     {
         juce::File presetNamesFile(
-            stripQuotes(std::string(default_preset_dir)) + path_separator + "preset.names");
+            std::string (get_preset_folder()) + path_separator + "preset.names");
         presetNamesFile.deleteFile();
         presetNamesFile.create();
         presetNamesFile.appendText(presetNames.joinIntoString("\n"));
@@ -153,7 +153,7 @@ public:
     void loadPresetNames()
     {
         juce::File presetNamesFile(
-            stripQuotes(std::string(default_preset_dir)) + path_separator + "preset.names");
+            std::string (get_preset_folder()) + path_separator + "preset.names");
 
         if (presetNamesFile.existsAsFile())
         {
@@ -218,10 +218,10 @@ public:
 
         // Step 3: Prepare file paths
         auto preset_idx = (int)currentPresetSlider.getValue();
-        juce::String fp = stripQuotes(default_preset_dir) + juce::File::getSeparatorString() + juce::String(preset_idx) + ".apvts";
+        juce::String fp = std::string (get_preset_folder())+ juce::File::getSeparatorString() + juce::String(preset_idx) + ".apvts";
         // preset data is the same just replace extension
         juce::String preset_data_fname = juce::String(preset_idx) + ".preset_data";
-        juce::String fp_data = stripQuotes(default_preset_dir) + juce::File::getSeparatorString() + preset_data_fname;
+        juce::String fp_data = std::string (get_preset_folder()) + juce::File::getSeparatorString() + preset_data_fname;
 
         // Create "deleted" folder if it doesn't exist
         juce::File deletedFolder(fp);

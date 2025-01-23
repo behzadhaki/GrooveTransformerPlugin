@@ -114,7 +114,7 @@ private:
 
     static std::string getImagePath(const std::string& image_name) {
         // Creates the path depending on the OS
-        std::string img_path_ = stripQuotes(std::string(images_folder)) +
+        std::string img_path_ = stripQuotes(std::string(get_images_folder())) +
                                 std::string(path_separator) +
                                 image_name;
         return img_path_;
@@ -180,7 +180,7 @@ private:
 
     static std::string getImagePath(const std::string& image_name) {
         // Creates the path depending on the OS
-        std::string img_path_ = stripQuotes(std::string(images_folder)) +
+        std::string img_path_ = stripQuotes(std::string(get_images_folder())) +
                                 std::string(path_separator) +
                                 image_name;
         return img_path_;

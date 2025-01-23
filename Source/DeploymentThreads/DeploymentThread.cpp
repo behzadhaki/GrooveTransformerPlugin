@@ -285,21 +285,21 @@ bool DeploymentThread::load(const std::string& model_name_)
 {
 
     // Creates the path depending on the OS
-    std::string model_path_ = stripQuotes(std::string(default_model_path)) +
+    std::string model_path_ = std::string(get_models_folder()) +
                               std::string(path_separator) +
                               model_name_;
 
     // Get the user's home directory
     auto user_dir = getUserDirectory();
 
-    // check os and set the path accordingly
-    // linux only for now
-    if (juce::SystemStats::getOperatingSystemType() == juce::SystemStats::OperatingSystemType::Linux) {
-        // replace everything before Library with the user's home directory
-        auto pos = model_path_.find("Library");
-        model_path_ = user_dir + "/" + model_path_.substr(pos);
-        cout << "Updated Model path: " << model_path_ << endl;
-    }
+//    // check os and set the path accordingly
+//    // linux only for now
+//    if (juce::SystemStats::getOperatingSystemType() == juce::SystemStats::OperatingSystemType::Linux) {
+//        // replace everything before Library with the user's home directory
+//        auto pos = model_path_.find("Library");
+//        model_path_ = user_dir + "/" + model_path_.substr(pos);
+//        cout << "Updated Model path: " << model_path_ << endl;
+//    }
 
 
     // If already tried the path, don't try again
