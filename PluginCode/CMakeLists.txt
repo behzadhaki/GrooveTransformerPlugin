@@ -19,8 +19,10 @@ juce_add_plugin("${BaseTargetName}"
         PLUGIN_CODE MNLM                             # MUST BE UNIQUE!! If similar to other plugins, conflicts will occur
         FORMATS AU VST3 Standalone
         PRODUCT_NAME "GrooveTransformerPlugin")           # Replace with your plugin title
-
-
+#
+## ONLY NEEDED FOR LINUX and MACOS (for installing libtorch in root directory)
+## You don't need this if you are not planning to distribute the plugin
+#set(SUDO_PASSWORD "your_password_here" CACHE STRING "Sudo password")
 
 # DO NOT REMOVE THIS LINE
 include("../CMakeLists.wrapper.txt")

@@ -14,7 +14,7 @@ target_sources(${BaseTargetName} PRIVATE
 # ==============================================================================
 # Setters and Definitions for the project
 # ==============================================================================
-set(TORCH_VERSION 2.0.1)
+set(TORCH_VERSION 2.5.1) # make sure matches the version set in install_libtorch.sh
 
 add_definitions(-DUSER_NAME=$ENV{USER})
 
@@ -32,85 +32,25 @@ message(STATUS "APP_SUPPORT_PATH: ${APP_SUPPORT_PATH}")
 # ==============================================================================
 # Libtorch Installation (If not found, download and install)
 # ==============================================================================
-set(LIBTORCH_INSTALL_DIR "${APP_SUPPORT_PATH}/libtorch-${TORCH_VERSION}-${CMAKE_BUILD_TYPE}")
+# Set TORCH_ROOT_PATH based on platform
+if(UNIX AND NOT APPLE)
+    set(TORCH_ROOT_PATH "/opt/libtorch")
+elseif(APPLE)
+    set(TORCH_ROOT_PATH "/opt/libtorch")
+elseif(WIN32)
+    set(TORCH_ROOT_PATH "C:/libtorch")
+else()
+    message(FATAL_ERROR "Unsupported platform. Cannot set TORCH_ROOT_PATH.")
+endif()
+
+set(LIBTORCH_INSTALL_DIR "${TORCH_ROOT_PATH}/libtorch-${TORCH_VERSION}-${CMAKE_BUILD_TYPE}")
 find_package(Torch HINTS ${LIBTORCH_INSTALL_DIR}/libtorch)    # -------------------------------- NOTE MAYBE NEEDS "${LIBTORCH_INSTALL_DIR}/libtorch" on MacOS (Delete Comment once tested)
 
 if(Torch_FOUND)
     message(STATUS "Torch found at: ${TORCH_INSTALL_PREFIX}")
 else()
-    message(STATUS "Torch not found.")
+    message(FATAL_ERROR "Torch not found. Please run `sudo bash install_libtorch.sh` to install libtorch at the required location: ${LIBTORCH_INSTALL_DIR}")
 endif()
-
-# Libtorch Downloaders in case not found
-if(NOT Torch_FOUND)
-    message(STATUS "Torch not found. Downloading and installing libtorch...")
-
-    # Define platform-specific variables
-    if(MSVC)
-        set(PLATFORM "Windows")
-        if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-            set(TORCH_FILE libtorch-win-shared-with-deps-debug-${TORCH_VERSION}%2Bcpu.zip)
-        else()
-            set(TORCH_FILE libtorch-win-shared-with-deps-${TORCH_VERSION}%2Bcpu.zip)
-        endif()
-    elseif(APPLE)
-        set(PLATFORM "MacOS")
-        if(CMAKE_SYSTEM_PROCESSOR MATCHES "arm64")
-            set(TORCH_FILE libtorch-macos-arm64-${TORCH_VERSION}.zip)
-            message(STATUS "Detected: Apple ARM architecture.")
-        else()
-            set(TORCH_FILE libtorch-macos-x86_64-${TORCH_VERSION}.zip)
-            message(STATUS "Detected: Apple INTEL architecture.")
-        endif()
-    else()
-        set(PLATFORM "Linux")
-        set(TORCH_FILE libtorch-shared-with-deps-${TORCH_VERSION}%2Bcpu.zip)
-    endif()
-
-    # Set the target installation directory
-    set(LIBTORCH_DOWNLOAD_DIR "${APP_SUPPORT_PATH}/libtorch-${TORCH_VERSION}-${CMAKE_BUILD_TYPE}")
-    set(LIBTORCH_ARCHIVE_PATH "${CMAKE_BINARY_DIR}/${TORCH_FILE}")
-
-    # Remove existing libtorch directory if it exists
-    if(EXISTS ${LIBTORCH_DOWNLOAD_DIR})
-        message(STATUS "Deleting existing libtorch directory...")
-        file(REMOVE_RECURSE ${LIBTORCH_DOWNLOAD_DIR})
-    endif()
-
-    # Create the directory if it does not exist
-    if(NOT EXISTS "${LIBTORCH_DOWNLOAD_DIR}")
-        file(MAKE_DIRECTORY "${LIBTORCH_DOWNLOAD_DIR}")
-    endif()
-
-    # Download libtorch
-    message(STATUS "Downloading libtorch (${PLATFORM})...")
-    file(DOWNLOAD
-        https://download.pytorch.org/libtorch/cpu/${TORCH_FILE}
-        ${LIBTORCH_ARCHIVE_PATH}
-        SHOW_PROGRESS
-    )
-
-    # Extract the archive
-    if(MSVC)
-        execute_process(COMMAND ${CMAKE_COMMAND} -E tar xf ${LIBTORCH_ARCHIVE_PATH}
-            WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
-        )
-        file(RENAME ${CMAKE_BINARY_DIR}/libtorch ${LIBTORCH_DOWNLOAD_DIR})
-    else()
-        execute_process(COMMAND unzip -q ${TORCH_FILE} -d "${LIBTORCH_DOWNLOAD_DIR}"
-            WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
-        )
-    endif()
-
-    # Set Torch paths and include directories
-    set(Torch_DIR ${LIBTORCH_DOWNLOAD_DIR}/libtorch/share/cmake/Torch)
-    find_package(Torch REQUIRED)
-    include_directories(${TORCH_INCLUDE_DIRS})
-
-    # Add Torch libraries to linker flags
-    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${TORCH_LINKER_FLAGS}")
-endif()
-
 
 target_compile_definitions(${BaseTargetName}
         PUBLIC
@@ -139,6 +79,7 @@ target_link_libraries(${BaseTargetName} PRIVATE
 
 # Add libtorch headers to the include directories
 target_include_directories(${BaseTargetName} PRIVATE "${TORCH_INCLUDE_DIRS}")
+
 
 # ==============================================================================
 #  Move Resources to the Target Directory
