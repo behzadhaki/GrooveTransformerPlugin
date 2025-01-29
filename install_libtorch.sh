@@ -16,7 +16,7 @@ else
 fi
 
 DEBUG_DIR="$ROOT_INSTALL_DIR/libtorch-${TORCH_VERSION}-Debug"
-RELEASE_DIR="$ROOT_INSTALL_DIR/libtorch-${TORCH_VERSION}-Re lease"
+RELEASE_DIR="$ROOT_INSTALL_DIR/libtorch-${TORCH_VERSION}-Release"
 
 # Determine platform-specific file name
 if [[ "$(uname -s)" == "Darwin" ]]; then
@@ -71,6 +71,13 @@ install_libtorch() {
 # Install Debug and Release versions
 install_libtorch "Debug" "$DEBUG_DIR" "$DEBUG_FILE"
 install_libtorch "Release" "$RELEASE_DIR" "$RELEASE_FILE"
+
+# Move .so files to /usr/lib on Linux
+if [[ "$(uname -s)" == "Linux" ]]; then
+  echo "Moving .so files to /usr/lib..."
+  find "$DEBUG_DIR" "$RELEASE_DIR" -type f -name "*.so*" -exec sudo cp {} /usr/lib/ \;
+  echo ".so files have been moved to /usr/lib"
+fi
 
 # Output result
 echo "Libtorch installations completed:"

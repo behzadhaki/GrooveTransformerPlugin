@@ -11,19 +11,9 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # ==============================================================================
 # Set Platform-Specific Paths
 # ==============================================================================
-if (MSVC)
-    set(TORCH_VERSION 2.0.1)
-    set(APP_SUPPORT_PATH "C:/ProgramData/")  # Must end with a slash
-    set(TORCH_ROOT_PATH "C:/ProgramData/libtorch-${TORCH_VERSION}-Release")
-elseif (APPLE)
-    set(TORCH_VERSION 2.5.1)
-    set(APP_SUPPORT_PATH "$ENV{HOME}/Library/Application Support/")
-    set(TORCH_ROOT_PATH "/opt/libtorch/libtorch-${TORCH_VERSION}-Release")
-elseif (UNIX)
-    set(TORCH_VERSION 2.5.1)
-    set(APP_SUPPORT_PATH "$ENV{HOME}/.local/share/")
-    set(TORCH_ROOT_PATH "/opt/libtorch/libtorch-${TORCH_VERSION}-Release")
-endif()
+set(TORCH_VERSION 2.5.1)
+set(APP_SUPPORT_PATH "$ENV{HOME}/.local/share/")
+set(TORCH_ROOT_PATH "/opt/libtorch/libtorch-${TORCH_VERSION}-${CMAKE_BUILD_TYPE}")
 
 message(STATUS "APP_SUPPORT_PATH: ${APP_SUPPORT_PATH}")
 message(STATUS "TORCH_ROOT_PATH: ${TORCH_ROOT_PATH}")
@@ -31,17 +21,12 @@ message(STATUS "TORCH_ROOT_PATH: ${TORCH_ROOT_PATH}")
 # ==============================================================================
 # Find and Include LibTorch
 # ==============================================================================
-find_package(Torch HINTS "${TORCH_ROOT_PATH}")
+find_package(Torch HINTS "${TORCH_ROOT_PATH}/libtorch")
 
 if (Torch_FOUND)
     message(STATUS "Torch found at: ${TORCH_INSTALL_PREFIX}")
 else()
-    if (MSVC)
-        message(FATAL_ERROR "Torch not found! Please install it by running ./install_torch.bat in the project root directory.")
-    endif()
-    if (APPLE OR UNIX)
-        message(FATAL_ERROR "Torch not found! Please install it by running ./install_torch.sh in the project root directory.")
-    endif()
+    message(FATAL_ERROR "Torch not found! Please install it by running ./install_torch.sh in the project root directory.")
 endif()
 
 # Explicitly add Libtorch include directories to fix missing headers issue
@@ -65,61 +50,27 @@ target_sources(${BaseTargetName} PRIVATE
 # ==============================================================================
 # Link Required Libraries
 # ==============================================================================
-if (MSVC)
-    target_link_libraries(${BaseTargetName} PRIVATE
-        shared_plugin_helpers
-        juce_recommended_config_flags
-        juce_recommended_lto_flags
-        juce_recommended_warning_flags
+target_link_libraries(${BaseTargetName} PRIVATE
+            shared_plugin_helpers
+            juce_recommended_config_flags
+            juce_recommended_lto_flags
+            juce_recommended_warning_flags
+            ${TORCH_LIBRARIES}
+            )
 
-        # Correct Libtorch .lib files
-        "${TORCH_ROOT_PATH}/lib/torch.lib"
-        "${TORCH_ROOT_PATH}/lib/torch_cpu.lib"
-        "${TORCH_ROOT_PATH}/lib/c10.lib"
-        "${TORCH_ROOT_PATH}/lib/kineto.lib"
-    )
-endif()
+# Add libtorch headers to the include directories
+target_include_directories(${BaseTargetName} PRIVATE "${TORCH_INCLUDE_DIRS}")
 
 # ==============================================================================
 # Copy DLLs After Build (Windows)
 # ==============================================================================
-if (MSVC)
-    set(LIBTORCH_DLLS
-        "asmjit.dll"
-        "c10.dll"
-        "fbgemm.dll"
-        "fbjni.dll"
-        "libiomp5md.dll"
-        "libiompstubs5md.dll"
-        "pytorch_jni.dll"
-        "torch.dll"
-        "torch_cpu.dll"
-        "torch_global_deps.dll"
-        "uv.dll"
-    )
 
-    foreach(DLL ${LIBTORCH_DLLS})
-        if (EXISTS "${TORCH_ROOT_PATH}/lib/${DLL}")
-            add_custom_command(TARGET ${BaseTargetName} POST_BUILD
-                COMMAND ${CMAKE_COMMAND} -E copy_if_different
-                "${TORCH_ROOT_PATH}/lib/${DLL}"
-                "$<TARGET_FILE_DIR:${BaseTargetName}>"
-            )
-        else()
-            message(WARNING "Warning: ${DLL} not found in ${TORCH_ROOT_PATH}/bin/! Skipping copy.")
-        endif()
-    endforeach()
-endif()
 
 
 # ==============================================================================
 # Define Paths for Resources and Settings
 # ==============================================================================
-if (MSVC)
-    string(REPLACE "/" "\\\\" ROOT_INSTALL_DIR "${APP_SUPPORT_PATH}\\${BaseTargetName}")
-else()
-    set(ROOT_INSTALL_DIR "${APP_SUPPORT_PATH}/${BaseTargetName}")
-endif()
+set(ROOT_INSTALL_DIR "${APP_SUPPORT_PATH}/${BaseTargetName}")
 
 # Copy TorchScripts directory
 file(COPY "${CMAKE_SOURCE_DIR}/TorchScripts" DESTINATION "${ROOT_INSTALL_DIR}")

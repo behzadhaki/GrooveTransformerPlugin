@@ -25,4 +25,10 @@ juce_add_plugin("${BaseTargetName}"
 #set(SUDO_PASSWORD "your_password_here" CACHE STRING "Sudo password")
 
 # DO NOT REMOVE THIS LINE
-include("../CMakeLists.wrapper.txt")
+if (MSVS)
+    include(../CMakeLists.MSVC.txt)
+elseif (APPLE)
+    include(../CMakeLists.Apple.txt)
+elseif (UNIX)
+    include(../CMakeLists.UNIX.txt)
+endif()

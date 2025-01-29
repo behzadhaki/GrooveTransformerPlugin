@@ -11,7 +11,7 @@ Paths:
 
 - Torch:
   - Win: C:\Windows\System32\*.dll copied via install_libtorch.bat script (which extracts and moves the content of torch_win_2.0.1.zip in repo)
-  - Linux: /opt/libtorch/libtorch-x.y.z-Debug (or Release)
+  - Linux: /opt/libtorch/libtorch-x.y.z-Debug (or Release) --> .so files should be copied to /usr/lib
   - Mac: /opt/libtorch/libtorch-x.y.z-Debug (or Release)
 - Resources:
   - Linux: /home/{usrname}/.local/share/{plugin_name}/
