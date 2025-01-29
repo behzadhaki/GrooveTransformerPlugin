@@ -21,46 +21,53 @@ inline const char* cmake_app_name = TOSTRING(APP_NAME);
 //inline const char* cmake_preset_dir = TOSTRING(DEFAULT_PRESET_DIR);
 
 
-inline juce::File get_appSupportFolder() {
-    juce::File appSupportFolder;
+inline juce::String get_appSupportFolder() {
+
+
+    std::string appSupportFolder;
 
     if (juce::SystemStats::getOperatingSystemType() & juce::SystemStats::OperatingSystemType::Linux) {
-        appSupportFolder = juce::File::getSpecialLocation(juce::File::userHomeDirectory).getChildFile(".local/share");
+        appSupportFolder = juce::File::getSpecialLocation(juce::File::userHomeDirectory).getChildFile(".local/share").getFullPathName().toStdString();
+    } else if (juce::SystemStats::getOperatingSystemType() & juce::SystemStats::OperatingSystemType::Windows) {
+        // Use common application data directory (C:\ProgramData)
+        appSupportFolder = juce::File::getSpecialLocation(juce::File::commonApplicationDataDirectory).getFullPathName().toStdString();
     } else {
-        appSupportFolder = juce::File::getSpecialLocation(juce::File::commonApplicationDataDirectory);
+        // Fallback for other OSes, if necessary
+        appSupportFolder = juce::File::getSpecialLocation(juce::File::userApplicationDataDirectory).getFullPathName().toStdString();
     }
-    return appSupportFolder;
-}
 
-static char* get_images_folder() {
+    return juce::String(appSupportFolder);
+}
+static std::string get_images_folder() {
     auto appSupportFolder = get_appSupportFolder();
+
     // images folder is in the appSupportFolder/app_name/GUI/img
-    juce::String images_folder = appSupportFolder.getFullPathName() + path_separator + juce::String(cmake_app_name) + path_separator + "GUI" + path_separator + "img";
+    juce::String images_folder = appSupportFolder + path_separator + juce::String(cmake_app_name) + path_separator + "GUI" + path_separator + "img";
     auto images_folder_str = images_folder.toStdString();
-    return (char*)images_folder.toStdString().c_str();
+    return images_folder_str;
 }
 
-static char* get_models_folder() {
+static std::string get_models_folder() {
     auto appSupportFolder = get_appSupportFolder();
     // images folder is in the appSupportFolder/app_name/TorchScripts/Models
-    juce::String models_folder = appSupportFolder.getFullPathName() + path_separator + juce::String(cmake_app_name) + path_separator + "TorchScripts" + path_separator + "Models";
+    juce::String models_folder = appSupportFolder + path_separator + juce::String(cmake_app_name) + path_separator + "TorchScripts" + path_separator + "Models";
     auto models_folder_str = models_folder.toStdString();
-    return (char*)models_folder.toStdString().c_str();
+    return models_folder_str;
 }
 
-static char* get_processing_scripts_folder() {
+static std::string get_processing_scripts_folder() {
     auto appSupportFolder = get_appSupportFolder();
     // images folder is in the appSupportFolder/app_name/TorchScripts/ProcessingScripts
-    juce::String processing_scripts_folder = appSupportFolder.getFullPathName() + path_separator + juce::String(cmake_app_name) + path_separator + "TorchScripts" + path_separator + "ProcessingScripts";
+    juce::String processing_scripts_folder = appSupportFolder + path_separator + juce::String(cmake_app_name) + path_separator + "TorchScripts" + path_separator + "ProcessingScripts";
     auto processing_scripts_folder_str = processing_scripts_folder.toStdString();
-    return (char*)processing_scripts_folder.toStdString().c_str();
+    return processing_scripts_folder_str;
 }
 
-static char* get_preset_folder() {
+static std::string get_preset_folder() {
     auto appSupportFolder = get_appSupportFolder();
     // images folder is in the appSupportFolder/app_name/Preset
-    juce::String preset_folder = appSupportFolder.getFullPathName() + path_separator + juce::String(cmake_app_name) + path_separator + "Presets";
+    juce::String preset_folder = appSupportFolder + path_separator + juce::String(cmake_app_name) + path_separator + "Presets";
     auto preset_folder_str = preset_folder.toStdString();
-    return (char*)preset_folder.toStdString().c_str();
+    return preset_folder_str;
 }
 

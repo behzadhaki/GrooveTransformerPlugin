@@ -9,7 +9,6 @@
 #include "../Includes/GenerationEvent.h"
 #include "../Includes/APVTSMediatorThread.h"
 #include <mutex>
-#include <dlfcn.h>
 
 // #include "gui/CustomGuiTextEditors.h"
 

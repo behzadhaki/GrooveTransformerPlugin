@@ -16,7 +16,7 @@ else
 fi
 
 DEBUG_DIR="$ROOT_INSTALL_DIR/libtorch-${TORCH_VERSION}-Debug"
-RELEASE_DIR="$ROOT_INSTALL_DIR/libtorch-${TORCH_VERSION}-Release"
+RELEASE_DIR="$ROOT_INSTALL_DIR/libtorch-${TORCH_VERSION}-Re lease"
 
 # Determine platform-specific file name
 if [[ "$(uname -s)" == "Darwin" ]]; then

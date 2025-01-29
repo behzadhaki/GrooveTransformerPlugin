@@ -10,10 +10,10 @@ then run cmake
 Paths:
 
 - Torch:
-  - Win: C:\libtorch\libtorch-x.y.z-Debug (or Release)
+  - Win: C:\Windows\System32\*.dll copied via install_libtorch.bat script (which extracts and moves the content of torch_win_2.0.1.zip in repo)
   - Linux: /opt/libtorch/libtorch-x.y.z-Debug (or Release)
   - Mac: /opt/libtorch/libtorch-x.y.z-Debug (or Release)
 - Resources:
   - Linux: /home/{usrname}/.local/share/{plugin_name}/
   - Mac:
-  - Win: C:\Users\{usrname}\AppData\Local\{plugin_name}\
+  - Win: C:\ProgramData\{plugin_name}\
