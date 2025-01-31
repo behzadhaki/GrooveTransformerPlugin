@@ -26,10 +26,10 @@ juce_add_plugin("${BaseTargetName}"
 
 # DO NOT REMOVE THIS LINE
 if (MSVS)
-    include(../CMakeLists.MSVC.txt)
+    include(../CMake/CMakeLists.MSVC.txt)
 elseif (APPLE)
-   include(../CMakeLists.ARM.txt)
+   include(../CMake/CMakeLists.ARM.txt)
    # include(../CMakeLists.UNIX.txt)
 elseif (UNIX)
-    include(../CMakeLists.UNIX.txt)
+    include(../CMake/CMakeLists.UNIX.txt)
 endif()

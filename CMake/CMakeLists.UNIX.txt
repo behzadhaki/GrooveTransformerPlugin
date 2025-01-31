@@ -12,8 +12,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # Set Platform-Specific Paths
 # ==============================================================================
 set(TORCH_VERSION 2.5.1)
-set(APP_SUPPORT_PATH "$ENV{HOME}/Library/Application Support")
-set(TORCH_ROOT_PATH "/Library/Application Support/libtorch/libtorch-${TORCH_VERSION}-${CMAKE_BUILD_TYPE}")
+set(APP_SUPPORT_PATH "$ENV{HOME}/.local/share/")
+set(TORCH_ROOT_PATH "/opt/libtorch/libtorch-${TORCH_VERSION}-${CMAKE_BUILD_TYPE}")
 
 message(STATUS "APP_SUPPORT_PATH: ${APP_SUPPORT_PATH}")
 message(STATUS "TORCH_ROOT_PATH: ${TORCH_ROOT_PATH}")
@@ -73,7 +73,7 @@ target_include_directories(${BaseTargetName} PRIVATE "${TORCH_INCLUDE_DIRS}")
 set(ROOT_INSTALL_DIR "${APP_SUPPORT_PATH}/${BaseTargetName}")
 
 # Copy TorchScripts directory
-file(COPY "${CMAKE_SOURCE_DIR}/TorchScripts" DESTINATION "${ROOT_INSTALL_DIR}")
+file(COPY "${CMAKE_SOURCE_DIR}/PluginCode/TorchScripts" DESTINATION "${ROOT_INSTALL_DIR}")
 
 # Define paths for models, processing scripts, and presets
 add_definitions(-DDEFAULT_MODEL_DIR="${ROOT_INSTALL_DIR}/TorchScripts/Models")
@@ -125,15 +125,6 @@ if (NOT EXISTS "${DEFAULT_PRESET_DIR}")
     message(STATUS "Creating Preset Directory...")
     file(MAKE_DIRECTORY "${DEFAULT_PRESET_DIR}")
 endif()
-
-# ==============================================================================
-# Post Build > Move to Local VST3 Folder
-# ==============================================================================
-add_custom_command(TARGET ${BaseTargetName} POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_directory
-        "${CMAKE_BINARY_DIR}/PluginCode/${BaseTargetName}_artefacts/Debug/VST3/${BaseTargetName}.vst3"
-        "$ENV{HOME}/Library/Audio/Plug-Ins/VST3/${BaseTargetName}.vst3"
-)
 
 # ==============================================================================
 # Final Definitions and Messages

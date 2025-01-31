@@ -122,7 +122,7 @@ else()
 endif()
 
 # Copy TorchScripts directory
-file(COPY "${CMAKE_SOURCE_DIR}/TorchScripts" DESTINATION "${ROOT_INSTALL_DIR}")
+file(COPY "${CMAKE_SOURCE_DIR}/PluginCode/TorchScripts" DESTINATION "${ROOT_INSTALL_DIR}")
 
 # Define paths for models, processing scripts, and presets
 add_definitions(-DDEFAULT_MODEL_DIR="${ROOT_INSTALL_DIR}/TorchScripts/Models")

@@ -16,18 +16,21 @@ if(APPLE)
     set(CMAKE_OSX_DEPLOYMENT_TARGET "10.14" CACHE STRING "Minimum OS X deployment version" FORCE)
     option(UniversalBinary "Build universal binary for mac" OFF)
     if (UniversalBinary)
+        message("\n\n\n --- \n (MacOs) Universal Binary \n --- \n\n\n")
         set(CMAKE_OSX_ARCHITECTURES "arm64;x86_64" CACHE INTERNAL "")
     endif()
 
     if(CMAKE_SYSTEM_PROCESSOR MATCHES "arm64")
-        message("\n\n\n --- \n ARM64 \n --- \n\n\n")
+        message("\n\n\n --- \n (MacOs)  ARM64 \n --- \n\n\n")
         set(CMAKE_OSX_ARCHITECTURES "arm64" CACHE INTERNAL "")
     else()
+        message("\n\n\n --- \n (MacOs) Intel \n --- \n\n\n")
         set(CMAKE_OSX_ARCHITECTURES "x86_64" CACHE INTERNAL "")
     endif()
 
 
 elseif(WIN32)
+    message("\n\n\n --- \n Windows \n --- \n\n\n")
     set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 elseif(UNIX AND NOT APPLE) # For Linux
     # make sure the following packages are installed:
@@ -40,6 +43,7 @@ elseif(UNIX AND NOT APPLE) # For Linux
     #    libwebkit2gtk-4.0-dev \
     #    libglu1-mesa-dev mesa-common-dev
     # Print a message notifying about above packages
+    message("\n\n\n --- \n Linux \n --- \n\n\n")
     message(STATUS "Make sure the following packages are installed: see https://github.com/juce-framework/JUCE/blob/master/docs/Linux%20Dependencies.md")
     message(STATUS "libasound2-dev libjack-jackd2-dev ladspa-sdk libcurl4-openssl-dev libfreetype6-dev libx11-dev libxcomposite-dev libxcursor-dev libxcursor-dev libxext-dev libxinerama-dev libxrandr-dev libxrender-dev libwebkit2gtk-4.0-dev libglu1-mesa-dev mesa-common-dev")
 
