@@ -16,4 +16,12 @@ option(JUCE_BUILD_EXAMPLES "Build JUCE Examples" OFF)
 #-DCPM_JUCE_SOURCE="Path_To_JUCE"
 #CPMAddPackage("gh:juce-framework/JUCE#develop")
 #CPMAddPackage("gh:juce-framework/JUCE#develop")
-CPMAddPackage("gh:juce-framework/JUCE#69795dc")
+
+if (MSVC)
+    CPMAddPackage("gh:juce-framework/JUCE#69795dc")
+elseif (UNIX AND NOT APPLE)
+    CPMAddPackage("gh:juce-framework/JUCE#69795dc")
+elseif (APPLE)
+    message("\n\n\n\n\nHERE")
+    CPMAddPackage("gh:juce-framework/JUCE#develop")
+endif ()

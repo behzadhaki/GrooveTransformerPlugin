@@ -1,0 +1,144 @@
+# Set C++ Standard
+target_compile_definitions(${BaseTargetName}
+        PUBLIC
+        JUCE_WEB_BROWSER=0
+        JUCE_USE_CURL=0
+        JUCE_VST3_CAN_REPLACE_VST2=0)
+
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+# ==============================================================================
+# Set Platform-Specific Paths
+# ==============================================================================
+set(TORCH_VERSION 2.5.1)
+set(APP_SUPPORT_PATH "$ENV{HOME}/Library/Application Support")
+set(TORCH_ROOT_PATH "/Library/Application Support/libtorch/libtorch-${TORCH_VERSION}-${CMAKE_BUILD_TYPE}")
+
+message(STATUS "APP_SUPPORT_PATH: ${APP_SUPPORT_PATH}")
+message(STATUS "TORCH_ROOT_PATH: ${TORCH_ROOT_PATH}")
+
+# ==============================================================================
+# Find and Include LibTorch
+# ==============================================================================
+find_package(Torch HINTS "${TORCH_ROOT_PATH}/libtorch")
+
+if (Torch_FOUND)
+    message(STATUS "Torch found at: ${TORCH_INSTALL_PREFIX}")
+else()
+    message(FATAL_ERROR "Torch not found! Please install it by running ./install_torch.sh in the project root directory.")
+endif()
+
+# Explicitly add Libtorch include directories to fix missing headers issue
+include_directories("${TORCH_ROOT_PATH}/include")
+include_directories("${TORCH_ROOT_PATH}/include/torch/csrc/api/include")
+
+# ==============================================================================
+# Add Source Files
+# ==============================================================================
+target_sources(${BaseTargetName} PRIVATE
+    ../shared_plugin_helpers/shared_plugin_helpers.cpp
+    ../Source/NeuralMidiFXPlugin/PluginProcessor.cpp
+    ../Source/NeuralMidiFXPlugin/processBlock.cpp
+    ../Source/NeuralMidiFXPlugin/PluginEditor.cpp
+    ../Source/DeploymentThreads/DeploymentThread.cpp
+    ../Source/Includes/colored_cout.cpp
+    deploy.h
+    settings.json
+)
+
+# ==============================================================================
+# Link Required Libraries
+# ==============================================================================
+target_link_libraries(${BaseTargetName} PRIVATE
+            shared_plugin_helpers
+            juce_recommended_config_flags
+            juce_recommended_lto_flags
+            juce_recommended_warning_flags
+            ${TORCH_LIBRARIES}
+            )
+
+# Add libtorch headers to the include directories
+target_include_directories(${BaseTargetName} PRIVATE "${TORCH_INCLUDE_DIRS}")
+
+# ==============================================================================
+# Copy DLLs After Build (Windows)
+# ==============================================================================
+
+
+
+# ==============================================================================
+# Define Paths for Resources and Settings
+# ==============================================================================
+set(ROOT_INSTALL_DIR "${APP_SUPPORT_PATH}/${BaseTargetName}")
+
+# Copy TorchScripts directory
+file(COPY "${CMAKE_SOURCE_DIR}/TorchScripts" DESTINATION "${ROOT_INSTALL_DIR}")
+
+# Define paths for models, processing scripts, and presets
+add_definitions(-DDEFAULT_MODEL_DIR="${ROOT_INSTALL_DIR}/TorchScripts/Models")
+add_definitions(-DDEFAULT_PROCESSING_SCRIPTS_DIR="${ROOT_INSTALL_DIR}/TorchScripts/ProcessingScripts")
+set(DEFAULT_PRESET_DIR "${ROOT_INSTALL_DIR}/Presets")
+add_definitions(-DDEFAULT_PRESET_DIR="${ROOT_INSTALL_DIR}/Presets")
+
+# Create GUI directory and copy settings.json
+file(MAKE_DIRECTORY "${ROOT_INSTALL_DIR}/GUI")
+file(COPY "${CMAKE_SOURCE_DIR}/PluginCode/settings.json" DESTINATION "${ROOT_INSTALL_DIR}/GUI")
+
+# Define DEFAULT_SETTINGS_FILE_PATH
+set(DEFAULT_SETTINGS_PATH "${ROOT_INSTALL_DIR}/GUI/settings.json")
+if (MSVC)
+    string(REPLACE "/" "\\\\" DEFAULT_SETTINGS_PATH "${DEFAULT_SETTINGS_PATH}")
+endif()
+add_definitions(-DDEFAULT_SETTINGS_FILE_PATH="${DEFAULT_SETTINGS_PATH}")
+message(STATUS "DEFAULT_SETTINGS_PATH: ${DEFAULT_SETTINGS_PATH}")
+
+# Copy PluginCode/img directory to GUI/img
+if (EXISTS "${CMAKE_SOURCE_DIR}/PluginCode/img")
+    file(COPY "${CMAKE_SOURCE_DIR}/PluginCode/img" DESTINATION "${ROOT_INSTALL_DIR}/GUI")
+endif()
+
+# Copy all files in Source/Images to GUI/img
+if (EXISTS "${CMAKE_SOURCE_DIR}/Source/Images")
+    file(GLOB_RECURSE IMAGES "${CMAKE_SOURCE_DIR}/Source/Images/*")
+    foreach(IMAGE ${IMAGES})
+        file(COPY ${IMAGE} DESTINATION "${ROOT_INSTALL_DIR}/GUI/img")
+        message(STATUS "Copying ${IMAGE} to ${ROOT_INSTALL_DIR}/GUI/img")
+    endforeach()
+endif()
+
+# Define DEFAULT_IMG_DIR
+set(DEFAULT_IMG_DIR "${ROOT_INSTALL_DIR}/GUI/img")
+if (MSVC)
+    string(REPLACE "/" "\\\\" DEFAULT_IMG_DIR "${DEFAULT_IMG_DIR}")
+endif()
+add_definitions(-DDEFAULT_IMG_DIR="${DEFAULT_IMG_DIR}")
+message(STATUS "Images are located in: ${DEFAULT_IMG_DIR}")
+
+# Root install directory for runtime resources
+add_definitions(-DROOT_INSTALL_DIR="${ROOT_INSTALL_DIR}")
+
+# ==============================================================================
+# Create PRESET_DIR if it does not exist
+# ==============================================================================
+if (NOT EXISTS "${DEFAULT_PRESET_DIR}")
+    message(STATUS "Creating Preset Directory...")
+    file(MAKE_DIRECTORY "${DEFAULT_PRESET_DIR}")
+endif()
+
+# ==============================================================================
+# Post Build > Move to Local VST3 Folder
+# ==============================================================================
+add_custom_command(TARGET ${BaseTargetName} POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+        "${CMAKE_BINARY_DIR}/PluginCode/${BaseTargetName}_artefacts/Debug/VST3/${BaseTargetName}.vst3"
+        "$ENV{HOME}/Library/Audio/Plug-Ins/VST3/${BaseTargetName}.vst3"
+)
+
+# ==============================================================================
+# Final Definitions and Messages
+# ==============================================================================
+add_definitions(-DAPP_NAME=${BaseTargetName})
+message(STATUS "Preset Directory: ${DEFAULT_PRESET_DIR}")
+message(STATUS "BaseTargetName: ${BaseTargetName}")
+message(STATUS "Target Directory: ${TARGET_DIR}")

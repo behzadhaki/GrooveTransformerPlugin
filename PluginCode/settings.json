@@ -781,7 +781,7 @@
         "FilterCCEvents_FLAG": false
     },
 
-    "deploy_method_min_wait_time_between_iterations": 0,
+    "deploy_method_min_wait_time_between_iterations": 1,
 
     "debugging_settings": {
         "DeploymentThread": {

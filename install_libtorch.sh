@@ -6,10 +6,10 @@ set -e
 TORCH_VERSION="2.5.1"  # Change this to your required version
 
 # Set root installation directory based on the platform
-if [[ "$(uname -s)" == "Darwin" ]] || [[ "$(uname -s)" == "Linux" ]]; then
-  ROOT_INSTALL_DIR="/opt/libtorch"  # Unix-like systems
-elif [[ "$(uname -s)" =~ MINGW64_NT|MSYS_NT|CYGWIN_NT ]]; then
-  ROOT_INSTALL_DIR="C:/libtorch"  # Windows
+if [[ "$(uname -s)" == "Darwin" ]]; then
+  ROOT_INSTALL_DIR="/Library/Application Support/libtorch"  # macOS
+elif [[ "$(uname -s)" == "Linux" ]]; then
+  ROOT_INSTALL_DIR="/opt/libtorch"  # Linux
 else
   echo "Unsupported platform. Exiting."
   exit 1

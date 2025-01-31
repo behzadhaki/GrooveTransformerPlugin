@@ -33,7 +33,7 @@ inline juce::String get_appSupportFolder() {
         appSupportFolder = juce::File::getSpecialLocation(juce::File::commonApplicationDataDirectory).getFullPathName().toStdString();
     } else {
         // Fallback for other OSes, if necessary
-        appSupportFolder = juce::File::getSpecialLocation(juce::File::userApplicationDataDirectory).getFullPathName().toStdString();
+        appSupportFolder = juce::File::getSpecialLocation(juce::File::userApplicationDataDirectory).getChildFile("Application Support").getFullPathName().toStdString();
     }
 
     return juce::String(appSupportFolder);

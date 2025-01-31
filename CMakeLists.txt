@@ -20,6 +20,7 @@ if(APPLE)
     endif()
 
     if(CMAKE_SYSTEM_PROCESSOR MATCHES "arm64")
+        message("\n\n\n --- \n ARM64 \n --- \n\n\n")
         set(CMAKE_OSX_ARCHITECTURES "arm64" CACHE INTERNAL "")
     else()
         set(CMAKE_OSX_ARCHITECTURES "x86_64" CACHE INTERNAL "")
@@ -47,7 +48,15 @@ endif()
 # Fetching JUCE
 # CPMAddPackage("gh:juce-framework/JUCE#develop")
 # rn I'm using version 7.0.5 on commit # 69795dc
-CPMAddPackage("gh:juce-framework/JUCE#69795dc")
+
+if (MSVC)
+    CPMAddPackage("gh:juce-framework/JUCE#69795dc")
+elseif (UNIX AND NOT APPLE)
+    CPMAddPackage("gh:juce-framework/JUCE#69795dc")
+elseif (APPLE)
+    CPMAddPackage("gh:juce-framework/JUCE#develop")
+endif ()
+
 # Modules and subdirectories
 
 juce_add_modules(shared_plugin_helpers)
