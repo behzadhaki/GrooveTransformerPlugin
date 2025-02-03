@@ -10,7 +10,7 @@ set RELEASE_DIR=%ROOT_INSTALL_DIR%\libtorch-%TORCH_VERSION%-Release
 set RELEASE_URL=https://download.pytorch.org/libtorch/cpu/libtorch-win-shared-with-deps-2.0.1%%2Bcpu.zip
 set TEMP_ZIP=%TEMP%\libtorch-%TORCH_VERSION%.zip
 
-set ZIP_FILE=%CD%\torch_win_2.0.1.zip
+set ZIP_FILE=%CD%\CMake\InstallTorch\torch_win_2.0.1.zip
 set TEMP_EXTRACT_DIR=%TEMP%\torch_extracted
 
 :: ==========================
