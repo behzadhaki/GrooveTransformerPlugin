@@ -29,7 +29,7 @@ if(APPLE)
     endif()
 
 
-elseif(WIN32)
+elseif(MSVC)
     message("\n\n\n --- \n Windows \n --- \n\n\n")
     set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 elseif(UNIX AND NOT APPLE) # For Linux
