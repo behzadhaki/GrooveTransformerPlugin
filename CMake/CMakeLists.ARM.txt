@@ -26,12 +26,33 @@ find_package(Torch HINTS "${TORCH_ROOT_PATH}/libtorch")
 if (Torch_FOUND)
     message(STATUS "Torch found at: ${TORCH_INSTALL_PREFIX}")
 else()
-    message(FATAL_ERROR "Torch not found! Please install it by running ./install_torch.sh in the project root directory.")
+    message(STATUS "Torch not found! Please install it by running the following in the terminal, from the project root directory.")
+    message(FATAL_ERROR "sudo bash CMake/InstallTorch/install_libtorch.sh")
 endif()
 
 # Explicitly add Libtorch include directories to fix missing headers issue
 include_directories("${TORCH_ROOT_PATH}/include")
 include_directories("${TORCH_ROOT_PATH}/include/torch/csrc/api/include")
+
+
+# ==============================================================================
+# Link Required Libraries for Runtime
+# ==============================================================================
+# Add /usr/local/lib to the library search path
+link_directories("/usr/local/lib")
+
+# Ensure CMake searches for libraries in /usr/local/lib
+set(CMAKE_INSTALL_RPATH "/usr/local/lib")
+
+target_link_libraries(${BaseTargetName} PRIVATE
+            shared_plugin_helpers
+            juce_recommended_config_flags
+            juce_recommended_lto_flags
+            juce_recommended_warning_flags
+            ${TORCH_LIBRARIES}
+            # Add additional libraries from /usr/local/lib if necessary
+            -Wl,-rpath,/usr/local/lib
+)
 
 # ==============================================================================
 # Add Source Files

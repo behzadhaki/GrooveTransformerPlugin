@@ -26,7 +26,7 @@ find_package(Torch HINTS "${TORCH_ROOT_PATH}/libtorch")
 if (Torch_FOUND)
     message(STATUS "Torch found at: ${TORCH_INSTALL_PREFIX}")
 else()
-    message(FATAL_ERROR "Torch not found! Please install it by running ./install_torch.sh in the project root directory.")
+    message(FATAL_ERROR "Torch not found! Please install it by running sudo bash CMake/InstallTorch/install_libtorch.sh in the project root directory.")
 endif()
 
 # Explicitly add Libtorch include directories to fix missing headers issue

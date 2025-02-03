@@ -79,6 +79,13 @@ if [[ "$(uname -s)" == "Linux" ]]; then
   echo ".so files have been moved to /usr/lib"
 fi
 
+# in MacOs, move .dylib files to /usr/local/lib
+if [[ "$(uname -s)" == "Darwin" ]]; then
+  echo "Moving .dylib files to /usr/local/lib..."
+  find "$DEBUG_DIR" "$RELEASE_DIR" -type f -name "*.dylib" -exec sudo cp {} /usr/local/lib/ \;
+  echo ".dylib files have been moved to /usr/local/lib"
+fi
+
 # Output result
 echo "Libtorch installations completed:"
 echo "  Debug: $DEBUG_DIR"
