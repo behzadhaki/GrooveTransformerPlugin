@@ -14,19 +14,9 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # ==============================================================================
 # Set Platform-Specific Paths
 # ==============================================================================
-if (MSVC)
-    set(TORCH_VERSION 2.0.1)
+set(TORCH_VERSION 2.0.1)
     set(APP_SUPPORT_PATH "C:/ProgramData/")  # Must end with a slash
     set(TORCH_ROOT_PATH "C:/ProgramData/libtorch-${TORCH_VERSION}-Release")
-elseif (APPLE)
-    set(TORCH_VERSION 2.5.1)
-    set(APP_SUPPORT_PATH "$ENV{HOME}/Library/Application Support/")
-    set(TORCH_ROOT_PATH "/opt/libtorch/libtorch-${TORCH_VERSION}-Release")
-elseif (UNIX)
-    set(TORCH_VERSION 2.5.1)
-    set(APP_SUPPORT_PATH "$ENV{HOME}/.local/share/")
-    set(TORCH_ROOT_PATH "/opt/libtorch/libtorch-${TORCH_VERSION}-Release")
-endif()
 
 message(STATUS "APP_SUPPORT_PATH: ${APP_SUPPORT_PATH}")
 message(STATUS "TORCH_ROOT_PATH: ${TORCH_ROOT_PATH}")
@@ -63,7 +53,6 @@ target_sources(${BaseTargetName} PRIVATE
 # ==============================================================================
 # Link Required Libraries
 # ==============================================================================
-if (MSVC)
     target_link_libraries(${BaseTargetName} PRIVATE
         shared_plugin_helpers
         juce_recommended_config_flags
@@ -76,48 +65,41 @@ if (MSVC)
         "${TORCH_ROOT_PATH}/lib/c10.lib"
         "${TORCH_ROOT_PATH}/lib/kineto.lib"
     )
-endif()
 
 # ==============================================================================
 # Copy DLLs After Build (Windows)
 # ==============================================================================
-if (MSVC)
-    set(LIBTORCH_DLLS
-        "asmjit.dll"
-        "c10.dll"
-        "fbgemm.dll"
-        "fbjni.dll"
-        "libiomp5md.dll"
-        "libiompstubs5md.dll"
-        "pytorch_jni.dll"
-        "torch.dll"
-        "torch_cpu.dll"
-        "torch_global_deps.dll"
-        "uv.dll"
-    )
+set(LIBTORCH_DLLS
+    "asmjit.dll"
+    "c10.dll"
+    "fbgemm.dll"
+    "fbjni.dll"
+    "libiomp5md.dll"
+    "libiompstubs5md.dll"
+    "pytorch_jni.dll"
+    "torch.dll"
+    "torch_cpu.dll"
+    "torch_global_deps.dll"
+    "uv.dll"
+)
 
-    foreach(DLL ${LIBTORCH_DLLS})
-        if (EXISTS "${TORCH_ROOT_PATH}/lib/${DLL}")
-            add_custom_command(TARGET ${BaseTargetName} POST_BUILD
-                COMMAND ${CMAKE_COMMAND} -E copy_if_different
-                "${TORCH_ROOT_PATH}/lib/${DLL}"
-                "$<TARGET_FILE_DIR:${BaseTargetName}>"
-            )
-        else()
-            message(WARNING "Warning: ${DLL} not found in ${TORCH_ROOT_PATH}/bin/! Skipping copy.")
-        endif()
-    endforeach()
-endif()
+foreach(DLL ${LIBTORCH_DLLS})
+    if (EXISTS "${TORCH_ROOT_PATH}/lib/${DLL}")
+        add_custom_command(TARGET ${BaseTargetName} POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            "${TORCH_ROOT_PATH}/lib/${DLL}"
+            "$<TARGET_FILE_DIR:${BaseTargetName}>"
+        )
+    else()
+        message(WARNING "Warning: ${DLL} not found in ${TORCH_ROOT_PATH}/bin/! Skipping copy.")
+    endif()
+endforeach()
 
 
 # ==============================================================================
 # Define Paths for Resources and Settings
 # ==============================================================================
-if (MSVC)
-    string(REPLACE "/" "\\\\" ROOT_INSTALL_DIR "${APP_SUPPORT_PATH}\\${BaseTargetName}")
-else()
-    set(ROOT_INSTALL_DIR "${APP_SUPPORT_PATH}/${BaseTargetName}")
-endif()
+string(REPLACE "/" "\\\\" ROOT_INSTALL_DIR "${APP_SUPPORT_PATH}\\${BaseTargetName}")
 
 # Copy TorchScripts directory
 file(COPY "${CMAKE_SOURCE_DIR}/PluginCode/TorchScripts" DESTINATION "${ROOT_INSTALL_DIR}")
@@ -156,9 +138,8 @@ endif()
 
 # Define DEFAULT_IMG_DIR
 set(DEFAULT_IMG_DIR "${ROOT_INSTALL_DIR}/GUI/img")
-if (MSVC)
-    string(REPLACE "/" "\\\\" DEFAULT_IMG_DIR "${DEFAULT_IMG_DIR}")
-endif()
+string(REPLACE "/" "\\\\" DEFAULT_IMG_DIR "${DEFAULT_IMG_DIR}")
+
 add_definitions(-DDEFAULT_IMG_DIR="${DEFAULT_IMG_DIR}")
 message(STATUS "Images are located in: ${DEFAULT_IMG_DIR}")
 
