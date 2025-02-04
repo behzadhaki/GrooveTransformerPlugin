@@ -161,3 +161,37 @@ add_definitions(-DAPP_NAME=${BaseTargetName})
 message(STATUS "Preset Directory: ${DEFAULT_PRESET_DIR}")
 message(STATUS "BaseTargetName: ${BaseTargetName}")
 message(STATUS "Target Directory: ${TARGET_DIR}")
+
+# ==============================================================================
+# Generate Inno Setup Script
+# ==============================================================================
+set(INNO_SETUP_SCRIPT "${CMAKE_BINARY_DIR}/../Packaging/installer_script_windows_full.iss")
+
+# Generate the .iss installer script
+file(WRITE "${INNO_SETUP_SCRIPT}"
+"[Setup]\n"
+"ArchitecturesInstallIn64BitMode=x64\n"
+"PrivilegesRequired=admin\n"
+"AppName=GrooveTransformerPlugin\n"
+"AppVersion=0.0.1\n"
+"DefaultDirName={cf}\n"
+"DefaultGroupName=GrooveTransformerPlugin\n"
+"OutputBaseFilename=GrooveTransformerPlugin-Full-0.0.1\n"
+"OutputDir=${CMAKE_BINARY_DIR}\n"
+"\n"
+"[Files]\n"
+"Source: \"${TORCH_ROOT_PATH}/lib/asmjit.dll\"; DestDir: \"{sys}\"\n"
+"Source: \"${TORCH_ROOT_PATH}/lib/c10.dll\"; DestDir: \"{sys}\"\n"
+"Source: \"${TORCH_ROOT_PATH}/lib/fbgemm.dll\"; DestDir: \"{sys}\"\n"
+"Source: \"${TORCH_ROOT_PATH}/lib/libiomp5md.dll\"; DestDir: \"{sys}\"\n"
+"Source: \"${TORCH_ROOT_PATH}/lib/libiompstubs5md.dll\"; DestDir: \"{sys}\"\n"
+"Source: \"${TORCH_ROOT_PATH}/lib/pytorch_jni.dll\"; DestDir: \"{sys}\"\n"
+"Source: \"${TORCH_ROOT_PATH}/lib/torch.dll\"; DestDir: \"{sys}\"\n"
+"Source: \"${TORCH_ROOT_PATH}/lib/torch_cpu.dll\"; DestDir: \"{sys}\"\n"
+"Source: \"${TORCH_ROOT_PATH}/lib/torch_global_deps.dll\"; DestDir: \"{sys}\"\n"
+"Source: \"${TORCH_ROOT_PATH}/lib/uv.dll\"; DestDir: \"{sys}\"\n"
+"Source: \"${CMAKE_BINARY_DIR}/PluginCode/GrooveTransformerPlugin_artefacts/Release/VST3/*.*\"; DestDir: \"C:\\Program Files\\Common Files\\VST3\"; Flags: recursesubdirs createallsubdirs\n"
+"Source: \"${APP_SUPPORT_PATH}GrooveTransformerPlugin/*.*\"; DestDir: \"C:\\ProgramData\\GrooveTransformerPlugin\"; Flags: recursesubdirs createallsubdirs\n"
+)
+
+message(STATUS "Inno Setup Script: ${INNO_SETUP_SCRIPT}")
