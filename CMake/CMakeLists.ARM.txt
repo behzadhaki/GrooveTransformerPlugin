@@ -39,10 +39,8 @@ include_directories("${TORCH_ROOT_PATH}/include/torch/csrc/api/include")
 # Link Required Libraries for Runtime
 # ==============================================================================
 # Add /usr/local/lib to the library search path
-link_directories("/usr/local/lib")
 
 # Ensure CMake searches for libraries in /usr/local/lib
-set(CMAKE_INSTALL_RPATH "/usr/local/lib")
 
 target_link_libraries(${BaseTargetName} PRIVATE
             shared_plugin_helpers
@@ -50,8 +48,8 @@ target_link_libraries(${BaseTargetName} PRIVATE
             juce_recommended_lto_flags
             juce_recommended_warning_flags
             ${TORCH_LIBRARIES}
-            # Add additional libraries from /usr/local/lib if necessary
-            -Wl,-rpath,/usr/local/lib
+            # add resources relative to the binary
+            -Wl,-rpath,@loader_path/../Resources
 )
 
 # ==============================================================================
@@ -71,16 +69,9 @@ target_sources(${BaseTargetName} PRIVATE
 # ==============================================================================
 # Link Required Libraries
 # ==============================================================================
-target_link_libraries(${BaseTargetName} PRIVATE
-            shared_plugin_helpers
-            juce_recommended_config_flags
-            juce_recommended_lto_flags
-            juce_recommended_warning_flags
-            ${TORCH_LIBRARIES}
-            )
 
 # Add libtorch headers to the include directories
-target_include_directories(${BaseTargetName} PRIVATE "${TORCH_INCLUDE_DIRS}")
+# target_include_directories(${BaseTargetName} PRIVATE "${TORCH_INCLUDE_DIRS}")
 
 # ==============================================================================
 # Copy DLLs After Build (Windows)
@@ -148,13 +139,44 @@ if (NOT EXISTS "${DEFAULT_PRESET_DIR}")
 endif()
 
 # ==============================================================================
-# Post Build > Move to Local VST3 Folder
+# Post Build > Create Resources Directory to the VST Folder (if building for VST)
 # ==============================================================================
+add_definitions(-DRESOURCES_DIR="${CMAKE_BINARY_DIR}/PluginCode/${BaseTargetName}_artefacts/Debug/VST3/${BaseTargetName}.vst3/Contents/Resources")
+
+
+# move all dylibs to the VST3 folder
+add_custom_command(TARGET ${BaseTargetName} POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+        "${TORCH_ROOT_PATH}/libtorch/lib"
+        "${CMAKE_BINARY_DIR}/PluginCode/${BaseTargetName}_artefacts/Debug/VST3/${BaseTargetName}.vst3/Contents/Resources"
+)
+
+# Post Build > Move to Local VST3 Folder
+# Iterate through all dylibs in the Resources folder
+file(GLOB_RECURSE DYLIBS "${CMAKE_BINARY_DIR}/PluginCode/${BaseTargetName}_artefacts/Debug/VST3/${BaseTargetName}.vst3/Contents/Resources/*.dylib")
+
+# Update the install name and rpath for each dylib
+foreach(DYLIB ${DYLIBS})
+    # Get the basename of the dylib (e.g., libtorch.dylib)
+    get_filename_component(DYLIB_NAME ${DYLIB} NAME)
+
+    # Change the install name to use @rpath
+    execute_process(COMMAND install_name_tool -id @rpath/${DYLIB_NAME} ${DYLIB})
+
+    # Change the dependencies to use @rpath
+    execute_process(COMMAND install_name_tool -change @rpath/libtorch.dylib @rpath/libtorch.dylib ${DYLIB})
+    execute_process(COMMAND install_name_tool -change @rpath/libtorch_cpu.dylib @rpath/libtorch_cpu.dylib ${DYLIB})
+    execute_process(COMMAND install_name_tool -change @rpath/libc10.dylib @rpath/libc10.dylib ${DYLIB})
+endforeach()
+
+
 add_custom_command(TARGET ${BaseTargetName} POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_directory
         "${CMAKE_BINARY_DIR}/PluginCode/${BaseTargetName}_artefacts/Debug/VST3/${BaseTargetName}.vst3"
         "$ENV{HOME}/Library/Audio/Plug-Ins/VST3/${BaseTargetName}.vst3"
 )
+
+
 
 # ==============================================================================
 # Final Definitions and Messages
