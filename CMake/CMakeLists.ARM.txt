@@ -11,8 +11,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # ==============================================================================
 # Set Platform-Specific Paths
 # ==============================================================================
-set(TORCH_VERSION 2.5.1)
-set(APP_SUPPORT_PATH "$ENV{HOME}/Library/Application Support")
+set(TORCH_VERSION 2.6.0)
+set(APP_SUPPORT_PATH "/Library/Application Support")
 set(TORCH_ROOT_PATH "/Library/Application Support/libtorch/libtorch-${TORCH_VERSION}-${CMAKE_BUILD_TYPE}")
 
 message(STATUS "APP_SUPPORT_PATH: ${APP_SUPPORT_PATH}")
@@ -141,19 +141,19 @@ endif()
 # ==============================================================================
 # Post Build > Create Resources Directory to the VST Folder (if building for VST)
 # ==============================================================================
-add_definitions(-DRESOURCES_DIR="${CMAKE_BINARY_DIR}/PluginCode/${BaseTargetName}_artefacts/Debug/VST3/${BaseTargetName}.vst3/Contents/Resources")
+add_definitions(-DRESOURCES_DIR="${CMAKE_BINARY_DIR}/PluginCode/${BaseTargetName}_artefacts/${CMAKE_BUILD_TYPE}/VST3/${BaseTargetName}.vst3/Contents/Resources")
 
 
 # move all dylibs to the VST3 folder
 add_custom_command(TARGET ${BaseTargetName} POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_directory
         "${TORCH_ROOT_PATH}/libtorch/lib"
-        "${CMAKE_BINARY_DIR}/PluginCode/${BaseTargetName}_artefacts/Debug/VST3/${BaseTargetName}.vst3/Contents/Resources"
+        "${CMAKE_BINARY_DIR}/PluginCode/${BaseTargetName}_artefacts/${CMAKE_BUILD_TYPE}/VST3/${BaseTargetName}.vst3/Contents/Resources"
 )
 
 # Post Build > Move to Local VST3 Folder
 # Iterate through all dylibs in the Resources folder
-file(GLOB_RECURSE DYLIBS "${CMAKE_BINARY_DIR}/PluginCode/${BaseTargetName}_artefacts/Debug/VST3/${BaseTargetName}.vst3/Contents/Resources/*.dylib")
+file(GLOB_RECURSE DYLIBS "${CMAKE_BINARY_DIR}/PluginCode/${BaseTargetName}_artefacts/${CMAKE_BUILD_TYPE}/VST3/${BaseTargetName}.vst3/Contents/Resources/*.dylib")
 
 # Update the install name and rpath for each dylib
 foreach(DYLIB ${DYLIBS})
@@ -172,11 +172,9 @@ endforeach()
 
 add_custom_command(TARGET ${BaseTargetName} POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_directory
-        "${CMAKE_BINARY_DIR}/PluginCode/${BaseTargetName}_artefacts/Debug/VST3/${BaseTargetName}.vst3"
+        "${CMAKE_BINARY_DIR}/PluginCode/${BaseTargetName}_artefacts/${CMAKE_BUILD_TYPE}/VST3/${BaseTargetName}.vst3"
         "$ENV{HOME}/Library/Audio/Plug-Ins/VST3/${BaseTargetName}.vst3"
 )
-
-
 
 # ==============================================================================
 # Final Definitions and Messages

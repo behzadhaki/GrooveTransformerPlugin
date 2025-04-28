@@ -3,7 +3,7 @@
 set -e
 
 # Variables
-TORCH_VERSION="2.5.1"  # Change this to your required version
+TORCH_VERSION="2.6.0"  # Change this to your required version
 
 # Set root installation directory based on the platform
 if [[ "$(uname -s)" == "Darwin" ]]; then

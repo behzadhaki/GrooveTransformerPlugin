@@ -16,7 +16,7 @@ Paths:
         - torch .dylib files are copied to Resources folder within VST3 Post-Build
 - Resources:
   - Linux: /home/{usrname}/.local/share/{plugin_name}/
-  - Mac: ~/Library/Application Support/{plugin_name}
+  - Mac: /Library/Application Support/{plugin_name}
   - Win: C:\ProgramData\{plugin_name}\
 
 
@@ -26,3 +26,10 @@ After build, vst3 is copied to:
 - Linux: /usr/lib/vst3/ ???? <== Double check this!
 - Mac: ~/Library/Audio/Plug-Ins/VST3/
 - Win: C:\Program Files\Common Files\VST3\
+
+
+---- 
+
+
+### Notes:
+1. On MacOS, the plugin can not be loaded if Neutone Fx or similar torch dependant plugins are loaded. 

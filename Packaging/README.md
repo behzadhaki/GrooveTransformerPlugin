@@ -21,3 +21,5 @@ A guide can be found [here](https://docs.juce.com/master/tutorial_app_plugin_pac
 5. Compile the script with `Innosetup`
 6. The installer will be created in the `Output` folder
 
+# MacOS
+
