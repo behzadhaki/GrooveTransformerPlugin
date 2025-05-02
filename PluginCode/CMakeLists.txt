@@ -33,3 +33,5 @@ elseif (APPLE)
 elseif (UNIX)
     include(../CMake/CMakeLists.UNIX.txt)
 endif()
+
+message(STATUS "CMAKE_BUILD_TYPE: ${CMAKE_BUILD_TYPE}")

@@ -646,6 +646,22 @@
                 },
                 {
                     "name": "Midi Mappings",
+                    "sliders": [
+                        {
+                            "label": "OSC Port",
+                            "min": 8000,
+                            "max": 10000,
+                            "default": 8075,
+                            "topLeftCorner": "Aa",
+                            "bottomRightCorner": "Db",
+                            "horizontal": true,
+                            "show_label": true,
+                            "info": "Port for OSC messages to be sent to",
+                            "exclude_from_presets": false,
+                            "allow_reset_to_default": false,
+                            "is_int": true
+                        }
+                    ],
                     "rotaries": [
                         {
                             "label": "Kick",

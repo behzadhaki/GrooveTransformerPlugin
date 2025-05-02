@@ -84,8 +84,20 @@ target_sources(${BaseTargetName} PRIVATE
 # ==============================================================================
 set(ROOT_INSTALL_DIR "${APP_SUPPORT_PATH}/${BaseTargetName}")
 
+execute_process(
+  COMMAND sudo -S  mkdir -p "${ROOT_INSTALL_DIR}"
+  RESULT_VARIABLE res
+)
+
+if (NOT res EQUAL 0)
+  message(FATAL_ERROR "Failed to create root directory.")
+endif()
+
 # Copy TorchScripts directory
-file(COPY "${CMAKE_SOURCE_DIR}/PluginCode/TorchScripts" DESTINATION "${ROOT_INSTALL_DIR}")
+# file(COPY "${CMAKE_SOURCE_DIR}/PluginCode/TorchScripts" DESTINATION "${ROOT_INSTALL_DIR}")
+execute_process(
+    COMMAND sudo cp -R "${CMAKE_SOURCE_DIR}/PluginCode/TorchScripts" "${ROOT_INSTALL_DIR}"
+)
 
 # Define paths for models, processing scripts, and presets
 add_definitions(-DDEFAULT_MODEL_DIR="${ROOT_INSTALL_DIR}/TorchScripts/Models")
@@ -94,8 +106,15 @@ set(DEFAULT_PRESET_DIR "${ROOT_INSTALL_DIR}/Presets")
 add_definitions(-DDEFAULT_PRESET_DIR="${ROOT_INSTALL_DIR}/Presets")
 
 # Create GUI directory and copy settings.json
-file(MAKE_DIRECTORY "${ROOT_INSTALL_DIR}/GUI")
-file(COPY "${CMAKE_SOURCE_DIR}/PluginCode/settings.json" DESTINATION "${ROOT_INSTALL_DIR}/GUI")
+execute_process(
+  COMMAND sudo mkdir -p "${ROOT_INSTALL_DIR}/GUI"
+  RESULT_VARIABLE res
+)
+
+# file(COPY "${CMAKE_SOURCE_DIR}/PluginCode/settings.json" DESTINATION "${ROOT_INSTALL_DIR}/GUI")
+execute_process(
+    COMMAND sudo cp -R "${CMAKE_SOURCE_DIR}/PluginCode/settings.json" "${ROOT_INSTALL_DIR}/GUI"
+)
 
 # Define DEFAULT_SETTINGS_FILE_PATH
 set(DEFAULT_SETTINGS_PATH "${ROOT_INSTALL_DIR}/GUI/settings.json")
@@ -107,20 +126,26 @@ message(STATUS "DEFAULT_SETTINGS_PATH: ${DEFAULT_SETTINGS_PATH}")
 
 # Copy PluginCode/img directory to GUI/img
 if (EXISTS "${CMAKE_SOURCE_DIR}/PluginCode/img")
-    file(COPY "${CMAKE_SOURCE_DIR}/PluginCode/img" DESTINATION "${ROOT_INSTALL_DIR}/GUI")
+    #file(COPY "${CMAKE_SOURCE_DIR}/PluginCode/img" DESTINATION "${ROOT_INSTALL_DIR}/GUI")
+    execute_process(
+        COMMAND sudo cp -R "${CMAKE_SOURCE_DIR}/PluginCode/img" "${ROOT_INSTALL_DIR}/GUI"
+    )
 endif()
 
 # Copy all files in Source/Images to GUI/img
 if (EXISTS "${CMAKE_SOURCE_DIR}/Source/Images")
     file(GLOB_RECURSE IMAGES "${CMAKE_SOURCE_DIR}/Source/Images/*")
     foreach(IMAGE ${IMAGES})
-        file(COPY ${IMAGE} DESTINATION "${ROOT_INSTALL_DIR}/GUI/img")
+        #file(COPY ${IMAGE} DESTINATION "${ROOT_INSTALL_DIR}/GUI/img")
+        execute_process(
+            COMMAND sudo cp -R ${IMAGE} "${ROOT_INSTALL_DIR}/GUI/img"
+        )
         message(STATUS "Copying ${IMAGE} to ${ROOT_INSTALL_DIR}/GUI/img")
     endforeach()
 endif()
 
 # Define DEFAULT_IMG_DIR
-set(DEFAULT_IMG_DIR "${ROOT_INSTALL_DIR}/GUI/img")
+set(DEFAULT_IMG_DIR "${ROOT_INSTALL_DIR}/GUI/img/")
 if (MSVC)
     string(REPLACE "/" "\\\\" DEFAULT_IMG_DIR "${DEFAULT_IMG_DIR}")
 endif()
@@ -135,7 +160,11 @@ add_definitions(-DROOT_INSTALL_DIR="${ROOT_INSTALL_DIR}")
 # ==============================================================================
 if (NOT EXISTS "${DEFAULT_PRESET_DIR}")
     message(STATUS "Creating Preset Directory...")
-    file(MAKE_DIRECTORY "${DEFAULT_PRESET_DIR}")
+    # file(MAKE_DIRECTORY "${DEFAULT_PRESET_DIR}")
+    execute_process(
+        COMMAND sudo mkdir -p "${DEFAULT_PRESET_DIR}"
+        RESULT_VARIABLE res
+    )
 endif()
 
 # ==============================================================================
@@ -183,3 +212,15 @@ add_definitions(-DAPP_NAME=${BaseTargetName})
 message(STATUS "Preset Directory: ${DEFAULT_PRESET_DIR}")
 message(STATUS "BaseTargetName: ${BaseTargetName}")
 message(STATUS "Target Directory: ${TARGET_DIR}")
+
+# kill sudo password
+execute_process(
+  COMMAND sudo -k
+  RESULT_VARIABLE res
+)
+if (NOT res EQUAL 0)
+  message(FATAL_ERROR "Failed to kill sudo password.")
+endif()
+message(STATUS "Sudo password killed.")
+
+# ==============================================================================
