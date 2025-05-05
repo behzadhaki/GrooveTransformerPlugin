@@ -68,3 +68,4 @@ if (${BUILD_JUCE_PROTOTYPE_EXAMPLES})
     #adding project folders:
 endif()
 add_subdirectory(PluginCode)
+

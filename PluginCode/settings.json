@@ -653,7 +653,7 @@
                             "max": 10000,
                             "default": 8075,
                             "topLeftCorner": "Aa",
-                            "bottomRightCorner": "Db",
+                            "bottomRightCorner": "Dd",
                             "horizontal": true,
                             "show_label": true,
                             "info": "Port for OSC messages to be sent to",

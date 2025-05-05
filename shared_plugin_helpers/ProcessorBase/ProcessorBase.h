@@ -1,6 +1,7 @@
 #pragma once
 
 #include "juce_audio_utils/juce_audio_utils.h"
+#include <juce_osc/juce_osc.h>
 
 namespace PluginHelpers
 {

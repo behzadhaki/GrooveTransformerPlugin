@@ -47,6 +47,7 @@ target_link_libraries(${BaseTargetName} PRIVATE
             juce_recommended_config_flags
             juce_recommended_lto_flags
             juce_recommended_warning_flags
+            juce::juce_osc
             ${TORCH_LIBRARIES}
             # add resources relative to the binary
             -Wl,-rpath,@loader_path/../Resources

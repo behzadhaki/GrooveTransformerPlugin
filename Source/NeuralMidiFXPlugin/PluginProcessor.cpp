@@ -1,6 +1,7 @@
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
 #include "../Includes/resourceManager.h"
+#include "juce_core/unit_tests/juce_UnitTestCategories.h"
 
 using namespace std;
 using namespace debugging_settings::ProcessorThread;
@@ -30,6 +31,8 @@ NeuralMidiFXPluginProcessor::NeuralMidiFXPluginProcessor() : apvts(
     shouldActStandalone = getEnableStandaloneState();
 
     realtimePlaybackInfo = make_unique<RealTimePlaybackInfo>();
+
+    
 
     // Populate Pianoroll Data
     // ----------------------------------------------------------------------------------

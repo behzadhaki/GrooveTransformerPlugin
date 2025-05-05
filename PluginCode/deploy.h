@@ -5,10 +5,7 @@
 
 #include <juce_audio_basics/juce_audio_basics.h>
 
-#include <juce_audio_basics/juce_audio_basics.h>
-
 #include <juce_core/juce_core.h>
-#include <juce_audio_basics/juce_audio_basics.h>
 
 class AudioInManager
 {
@@ -108,8 +105,27 @@ public:
     AudioInManager queued_audio_buffer;
     bool no_presets_received_yet = true;
 
+    int osc_port = 7401;
+    bool osc_connected = false;
+    juce::OSCSender osc2MAXSender;
+
+    // destructor
+    ~PluginDeploymentThread() override {
+        // cleanup
+        queued_audio_buffer.clear();
+        osc2MAXSender.disconnect();
+    }
+
     // initialize your deployment thread here
     PluginDeploymentThread():DeploymentThread() {
+        osc_connected = osc2MAXSender.connect("127.0.0.1", osc_port);
+
+        if (osc_connected) {
+            cout << "Connected to Max at port " << osc_port << endl;
+        } else {
+            cout << "Failed to connect to Max at port " << osc_port << endl;
+        }
+
         audio_frame.setSize(1, queued_audio_buffer.analysisWindowSize);
 
         // initialize the latent vectors to latent_g of an empty groove
@@ -128,6 +144,22 @@ public:
         bool new_preset_loaded_since_last_call,
         bool new_midi_file_dropped_on_visualizers,
         bool new_audio_file_dropped_on_visualizers) override {
+
+        // check osc_port param
+        auto osc_port_slider = int(gui_params.getValueFor("OSC Port"));
+        if (osc_port_slider != osc_port) {
+            osc_port = osc_port_slider;
+            if (osc_connected) {
+                osc2MAXSender.disconnect();
+            }
+            osc_connected = osc2MAXSender.connect("127.0.0.1", osc_port);
+            if (osc_connected) {
+                cout << "Connected to Max at port " << osc_port << endl;
+            } else {
+                cout << "Failed to connect to Max at port " << osc_port << endl;
+            }
+        }
+
 
         if (new_preset_loaded_since_last_call && no_presets_received_yet) {
             no_presets_received_yet = false;
@@ -1292,6 +1324,12 @@ private:
     void preparePlaybackSequence() {
         if (!playback_hits.sizes().empty()) // check if any hits are available
         {
+            // send osc message to clear the visualizer
+            if (osc_connected) {
+                // osc2MAXSender.send("/myplugin/note", 64, 0.8f);
+                osc2MAXSender.send("/clear", 0.0f);
+            }
+
             // clear playback sequence
             playbackSequence.clear();
 
@@ -1326,10 +1364,20 @@ private:
                         if (velocity > 0.0f) {
                             playbackSequence.addNoteWithDuration(
                                 10, midi_num, velocity, time, duration);
-                        }
+                            if (osc_connected) {
+                                osc2MAXSender.send("/hit", voice_ix, (float)time, velocity);
+                                auto voice_ix_str = "/" + std::to_string(voice_ix);
+                                osc2MAXSender.send(
+                                    voice_ix_str.data(), (float)time, velocity);
 
+                            }
+                        }
                     }
                 }
+            }
+
+            if (osc_connected) {
+                osc2MAXSender.send("/done");
             }
         }
     }
