@@ -1,4 +1,6 @@
+# ==============================================================================
 # Set C++ Standard
+# ==============================================================================
 target_compile_definitions(${BaseTargetName}
         PUBLIC
         JUCE_WEB_BROWSER=0
@@ -13,44 +15,45 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # ==============================================================================
 set(TORCH_VERSION 2.6.0)
 set(APP_SUPPORT_PATH "/Library/Application Support")
+
+# Compile against the original libtorch install
 set(TORCH_ROOT_PATH "/Library/Application Support/libtorch/libtorch-${TORCH_VERSION}-${CMAKE_BUILD_TYPE}")
+
+# Runtime dylibs location (relocated copy)
+set(TORCH_RUNTIME_PATH "/Library/MusicTechnologyGroup/libtorch/${TORCH_VERSION}-${CMAKE_BUILD_TYPE}")
 
 message(STATUS "APP_SUPPORT_PATH: ${APP_SUPPORT_PATH}")
 message(STATUS "TORCH_ROOT_PATH: ${TORCH_ROOT_PATH}")
+message(STATUS "TORCH_RUNTIME_PATH: ${TORCH_RUNTIME_PATH}")
 
 # ==============================================================================
-# Find and Include LibTorch
+# Find and Include LibTorch (compile time)
 # ==============================================================================
 find_package(Torch HINTS "${TORCH_ROOT_PATH}/libtorch")
 
 if (Torch_FOUND)
     message(STATUS "Torch found at: ${TORCH_INSTALL_PREFIX}")
 else()
-    message(STATUS "Torch not found! Please install it by running the following in the terminal, from the project root directory.")
-    message(FATAL_ERROR "sudo bash CMake/InstallTorch/install_libtorch.sh")
+    message(FATAL_ERROR "Torch not found! Please install it with install_libtorch.sh")
 endif()
 
-# Explicitly add Libtorch include directories to fix missing headers issue
+# Explicitly add Libtorch include directories
 include_directories("${TORCH_ROOT_PATH}/include")
 include_directories("${TORCH_ROOT_PATH}/include/torch/csrc/api/include")
-
 
 # ==============================================================================
 # Link Required Libraries for Runtime
 # ==============================================================================
-# Add /usr/local/lib to the library search path
-
-# Ensure CMake searches for libraries in /usr/local/lib
-
 target_link_libraries(${BaseTargetName} PRIVATE
-            shared_plugin_helpers
-            juce_recommended_config_flags
-            juce_recommended_lto_flags
-            juce_recommended_warning_flags
-            juce::juce_osc
-            ${TORCH_LIBRARIES}
-            # add resources relative to the binary
-            -Wl,-rpath,@loader_path/../Resources
+    shared_plugin_helpers
+    juce_recommended_config_flags
+    juce_recommended_lto_flags
+    juce_recommended_warning_flags
+    juce::juce_osc
+    ${TORCH_LIBRARIES}
+    # ensure runtime loader finds relocated dylibs
+    -Wl,-rpath,${TORCH_RUNTIME_PATH}
+    -Wl,-rpath,@loader_path/../Resources
 )
 
 # ==============================================================================
@@ -68,34 +71,19 @@ target_sources(${BaseTargetName} PRIVATE
 )
 
 # ==============================================================================
-# Link Required Libraries
-# ==============================================================================
-
-# Add libtorch headers to the include directories
-# target_include_directories(${BaseTargetName} PRIVATE "${TORCH_INCLUDE_DIRS}")
-
-# ==============================================================================
-# Copy DLLs After Build (Windows)
-# ==============================================================================
-
-
-
-# ==============================================================================
 # Define Paths for Resources and Settings
 # ==============================================================================
 set(ROOT_INSTALL_DIR "${APP_SUPPORT_PATH}/${BaseTargetName}")
 
 execute_process(
-  COMMAND sudo -S  mkdir -p "${ROOT_INSTALL_DIR}"
+  COMMAND sudo -S mkdir -p "${ROOT_INSTALL_DIR}"
   RESULT_VARIABLE res
 )
-
 if (NOT res EQUAL 0)
   message(FATAL_ERROR "Failed to create root directory.")
 endif()
 
 # Copy TorchScripts directory
-# file(COPY "${CMAKE_SOURCE_DIR}/PluginCode/TorchScripts" DESTINATION "${ROOT_INSTALL_DIR}")
 execute_process(
     COMMAND sudo cp -R "${CMAKE_SOURCE_DIR}/PluginCode/TorchScripts" "${ROOT_INSTALL_DIR}"
 )
@@ -111,8 +99,6 @@ execute_process(
   COMMAND sudo mkdir -p "${ROOT_INSTALL_DIR}/GUI"
   RESULT_VARIABLE res
 )
-
-# file(COPY "${CMAKE_SOURCE_DIR}/PluginCode/settings.json" DESTINATION "${ROOT_INSTALL_DIR}/GUI")
 execute_process(
     COMMAND sudo cp -R "${CMAKE_SOURCE_DIR}/PluginCode/settings.json" "${ROOT_INSTALL_DIR}/GUI"
 )
@@ -127,7 +113,6 @@ message(STATUS "DEFAULT_SETTINGS_PATH: ${DEFAULT_SETTINGS_PATH}")
 
 # Copy PluginCode/img directory to GUI/img
 if (EXISTS "${CMAKE_SOURCE_DIR}/PluginCode/img")
-    #file(COPY "${CMAKE_SOURCE_DIR}/PluginCode/img" DESTINATION "${ROOT_INSTALL_DIR}/GUI")
     execute_process(
         COMMAND sudo cp -R "${CMAKE_SOURCE_DIR}/PluginCode/img" "${ROOT_INSTALL_DIR}/GUI"
     )
@@ -137,7 +122,6 @@ endif()
 if (EXISTS "${CMAKE_SOURCE_DIR}/Source/Images")
     file(GLOB_RECURSE IMAGES "${CMAKE_SOURCE_DIR}/Source/Images/*")
     foreach(IMAGE ${IMAGES})
-        #file(COPY ${IMAGE} DESTINATION "${ROOT_INSTALL_DIR}/GUI/img")
         execute_process(
             COMMAND sudo cp -R ${IMAGE} "${ROOT_INSTALL_DIR}/GUI/img"
         )
@@ -161,7 +145,6 @@ add_definitions(-DROOT_INSTALL_DIR="${ROOT_INSTALL_DIR}")
 # ==============================================================================
 if (NOT EXISTS "${DEFAULT_PRESET_DIR}")
     message(STATUS "Creating Preset Directory...")
-    # file(MAKE_DIRECTORY "${DEFAULT_PRESET_DIR}")
     execute_process(
         COMMAND sudo mkdir -p "${DEFAULT_PRESET_DIR}"
         RESULT_VARIABLE res
@@ -169,38 +152,40 @@ if (NOT EXISTS "${DEFAULT_PRESET_DIR}")
 endif()
 
 # ==============================================================================
-# Post Build > Create Resources Directory to the VST Folder (if building for VST)
+# Post Build > Resources Path
 # ==============================================================================
 add_definitions(-DRESOURCES_DIR="${CMAKE_BINARY_DIR}/PluginCode/${BaseTargetName}_artefacts/${CMAKE_BUILD_TYPE}/VST3/${BaseTargetName}.vst3/Contents/Resources")
 
-
-# move all dylibs to the VST3 folder
-add_custom_command(TARGET ${BaseTargetName} POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_directory
-        "${TORCH_ROOT_PATH}/libtorch/lib"
-        "${CMAKE_BINARY_DIR}/PluginCode/${BaseTargetName}_artefacts/${CMAKE_BUILD_TYPE}/VST3/${BaseTargetName}.vst3/Contents/Resources"
+# ==============================================================================
+# Post Build > Relink Plugin Binary to Relocated Torch dylibs
+# ==============================================================================
+set(PLUGIN_BINARY
+    "${CMAKE_BINARY_DIR}/PluginCode/${BaseTargetName}_artefacts/${CMAKE_BUILD_TYPE}/VST3/${BaseTargetName}.vst3/Contents/MacOS/${BaseTargetName}"
 )
 
-# Post Build > Move to Local VST3 Folder
-# Iterate through all dylibs in the Resources folder
-file(GLOB_RECURSE DYLIBS "${CMAKE_BINARY_DIR}/PluginCode/${BaseTargetName}_artefacts/${CMAKE_BUILD_TYPE}/VST3/${BaseTargetName}.vst3/Contents/Resources/*.dylib")
+add_custom_command(
+    OUTPUT "${PLUGIN_BINARY}.patched"
+    COMMAND ${CMAKE_COMMAND} -E echo "Relinking plugin binary to Torch dylibs in ${TORCH_RUNTIME_PATH}"
+    COMMAND install_name_tool -change "${TORCH_ROOT_PATH}/lib/libc10.dylib"
+                              "${TORCH_RUNTIME_PATH}/libc10.dylib"
+                              "${PLUGIN_BINARY}"
+    COMMAND install_name_tool -change "${TORCH_ROOT_PATH}/lib/libtorch_cpu.dylib"
+                              "${TORCH_RUNTIME_PATH}/libtorch_cpu.dylib"
+                              "${PLUGIN_BINARY}"
+    COMMAND install_name_tool -change "${TORCH_ROOT_PATH}/lib/libtorch.dylib"
+                              "${TORCH_RUNTIME_PATH}/libtorch.dylib"
+                              "${PLUGIN_BINARY}"
+    COMMAND ${CMAKE_COMMAND} -E touch "${PLUGIN_BINARY}.patched"
+    DEPENDS "${PLUGIN_BINARY}"
+    VERBATIM
+)
 
-# Update the install name and rpath for each dylib
-foreach(DYLIB ${DYLIBS})
-    # Get the basename of the dylib (e.g., libtorch.dylib)
-    get_filename_component(DYLIB_NAME ${DYLIB} NAME)
+add_custom_target(patch_plugin ALL DEPENDS "${PLUGIN_BINARY}.patched")
 
-    # Change the install name to use @rpath
-    execute_process(COMMAND install_name_tool -id @rpath/${DYLIB_NAME} ${DYLIB})
-
-    # Change the dependencies to use @rpath
-    execute_process(COMMAND install_name_tool -change @rpath/libtorch.dylib @rpath/libtorch.dylib ${DYLIB})
-    execute_process(COMMAND install_name_tool -change @rpath/libtorch_cpu.dylib @rpath/libtorch_cpu.dylib ${DYLIB})
-    execute_process(COMMAND install_name_tool -change @rpath/libc10.dylib @rpath/libc10.dylib ${DYLIB})
-endforeach()
-
-
-add_custom_command(TARGET ${BaseTargetName} POST_BUILD
+# ==============================================================================
+# Post Build > Copy plugin to local VST3 folder
+# ==============================================================================
+add_custom_command(TARGET patch_plugin POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_directory
         "${CMAKE_BINARY_DIR}/PluginCode/${BaseTargetName}_artefacts/${CMAKE_BUILD_TYPE}/VST3/${BaseTargetName}.vst3"
         "$ENV{HOME}/Library/Audio/Plug-Ins/VST3/${BaseTargetName}.vst3"
@@ -223,5 +208,3 @@ if (NOT res EQUAL 0)
   message(FATAL_ERROR "Failed to kill sudo password.")
 endif()
 message(STATUS "Sudo password killed.")
-
-# ==============================================================================

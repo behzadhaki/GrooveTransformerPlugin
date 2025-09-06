@@ -32,4 +32,16 @@ After build, vst3 is copied to:
 
 
 ### Notes:
-1. On MacOS, the plugin can not be loaded if Neutone Fx or similar torch dependant plugins are loaded. 
+1. On MacOS, the plugin can not be loaded if Neutone Fx or similar torch dependant plugins are loaded.
+
+
+
+```commandline
+ sudo bash CMake/InstallTorch/install_libtorch.sh
+```
+
+```commandline
+dyld_info -dependents \
+  ~/Library/Audio/Plug-Ins/VST3/GrooveTransformerPlugin.vst3/Contents/MacOS/GrooveTransformerPlugin
+```
+  
