@@ -1,31 +1,23 @@
 
-sudo bash install_libtorch.sh
+## Compilation Instructions
 
+### Prerequisites (Libtorch)
 
-then run cmake
+On MacOS, Linux, Windows, you need to install libtorch first.
 
+On Windows, run the script
 
-----
+```commandline
+    .\CMake\InstallTorch\install_libtorch.bat
+```
 
-Paths:
+On MacOS or Linux, run the following command in terminal:
 
-- Torch:
-  - Win: C:\Windows\System32\*.dll copied via install_libtorch.bat script (which extracts and moves the content of torch_win_2.0.1.zip in repo)
-  - Linux: /opt/libtorch/libtorch-x.y.z-Debug (or Release) --> .so files should be copied to /usr/lib
-  - Mac: /Library/Application Support/libtorch/libtorch-x.y.z-Debug (or Release) --> for dev!
-        - torch .dylib files are copied to Resources folder within VST3 Post-Build
-- Resources:
-  - Linux: /home/{usrname}/.local/share/{plugin_name}/
-  - Mac: /Library/Application Support/{plugin_name}
-  - Win: C:\ProgramData\{plugin_name}\
+```commandline
+    sudo bash CMake/InstallTorch/install_libtorch.sh
+```
 
-
-----
-
-After build, vst3 is copied to:
-- Linux: /usr/lib/vst3/ ???? <== Double check this!
-- Mac: ~/Library/Audio/Plug-Ins/VST3/
-- Win: C:\Program Files\Common Files\VST3\
+Then, run cmake. 
 
 
 ---- 
@@ -35,13 +27,8 @@ After build, vst3 is copied to:
 1. On MacOS, the plugin can not be loaded if Neutone Fx or similar torch dependant plugins are loaded.
 
 
+--- 
 
-```commandline
- sudo bash CMake/InstallTorch/install_libtorch.sh
-```
+# Demos/Documentation/Contact
 
-```commandline
-dyld_info -dependents \
-  ~/Library/Audio/Plug-Ins/VST3/GrooveTransformerPlugin.vst3/Contents/MacOS/GrooveTransformerPlugin
-```
-  
+Please visit the [official page](https://mtg-toolbox.github.io/ready-to-use-apps/groovetransformer-vst/) for demos, documentation, and contact information.
