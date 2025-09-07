@@ -6,7 +6,7 @@ set -e
 if [[ $(uname -m) == "arm64" ]] || [[ $(uname -m) == "aarch64" ]]; then
   TORCH_VERSION="2.6.0"  # ARM architecture
 else
-  TORCH_VERSION="2.2.0"  # Intel/x86_64 architecture
+  TORCH_VERSION="2.0.0"  # Intel/x86_64 architecture
 fi
 
 # Set root installation directory based on the platform
@@ -29,8 +29,8 @@ if [[ "$(uname -s)" == "Darwin" ]]; then
     DEBUG_FILE="libtorch-macos-arm64-${TORCH_VERSION}.zip"
     RELEASE_FILE="libtorch-macos-arm64-${TORCH_VERSION}.zip"
   else
-    DEBUG_FILE="libtorch-macos-x86_64-${TORCH_VERSION}.zip"
-    RELEASE_FILE="libtorch-macos-x86_64-${TORCH_VERSION}.zip"
+    DEBUG_FILE="libtorch-macos-${TORCH_VERSION}.zip"
+    RELEASE_FILE="libtorch-macos-${TORCH_VERSION}.zip"
   fi
 elif [[ "$(uname -s)" == "Linux" ]]; then
   PLATFORM="Linux"
