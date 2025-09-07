@@ -6,7 +6,7 @@ set -e
 if [[ $(uname -m) == "arm64" ]] || [[ $(uname -m) == "aarch64" ]]; then
   TORCH_VERSION="2.6.0"  # ARM architecture
 else
-  TORCH_VERSION="2.0.0"  # Intel/x86_64 architecture
+  TORCH_VERSION="2.2.0"  # Intel/x86_64 architecture
 fi
 
 # Set root installation directory based on the platform
