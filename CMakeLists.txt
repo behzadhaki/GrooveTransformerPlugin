@@ -58,7 +58,11 @@ if (MSVC)
 elseif (UNIX AND NOT APPLE)
     CPMAddPackage("gh:juce-framework/JUCE#69795dc")
 elseif (APPLE)
-    CPMAddPackage("gh:juce-framework/JUCE#develop")
+    if(CMAKE_SYSTEM_PROCESSOR MATCHES "arm64")
+        CPMAddPackage("gh:juce-framework/JUCE#develop")
+    else()
+        CPMAddPackage("gh:juce-framework/JUCE#69795dc")
+    endif()
 endif ()
 
 # Modules and subdirectories

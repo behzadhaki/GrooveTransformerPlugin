@@ -3,7 +3,11 @@
 set -e
 
 # Variables
-TORCH_VERSION="2.6.0"  # Change this to your required version
+if [[ $(uname -m) == "arm64" ]] || [[ $(uname -m) == "aarch64" ]]; then
+  TORCH_VERSION="2.6.0"  # ARM architecture
+else
+  TORCH_VERSION="2.0.1"  # Intel/x86_64 architecture
+fi
 
 # Set root installation directory based on the platform
 if [[ "$(uname -s)" == "Darwin" ]]; then

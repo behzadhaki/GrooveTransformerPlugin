@@ -11,7 +11,12 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # ==============================================================================
 # Set Platform-Specific Paths
 # ==============================================================================
-set(TORCH_VERSION 2.6.0)
+if(CMAKE_SYSTEM_PROCESSOR MATCHES "arm64")
+    set(TORCH_VERSION 2.6.0)
+else()
+    set(TORCH_VERSION 2.0.1)
+endif()
+
 set(APP_SUPPORT_PATH "/Library/Application Support")
 set(TORCH_ROOT_PATH "/Library/Application Support/libtorch/libtorch-${TORCH_VERSION}-${CMAKE_BUILD_TYPE}")
 
