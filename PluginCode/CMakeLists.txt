@@ -5,20 +5,18 @@ set (BaseTargetName GrooveTransformerPlugin)
 add_definitions(-DPROJECT_NAME="${BaseTargetName}")
 
 juce_add_plugin("${BaseTargetName}"
-        # VERSION ...                               # Set this if the plugin version is different to the project version
-        # ICON_BIG ...                              # ICON_* arguments specify a path to an image file to use as an icon for the Standalone
-        # ICON_SMALL ...
-        COMPANY_NAME "MusicTechnologyGroup"                 # Replace with a tag identifying your name
-        IS_SYNTH FALSE                               # There is no MIDI vst3 plugin format, so we are going to assume a midi instrument plugin
+        COMPANY_NAME "MusicTechnologyGroup"
+        IS_SYNTH FALSE
         NEEDS_MIDI_INPUT TRUE
         NEEDS_MIDI_OUTPUT TRUE
-        AU_MAIN_TYPE kAudioUnitType_MIDIProcessor
+        AU_MAIN_TYPE kAudioUnitType_MusicDevice
         EDITOR_WANTS_KEYBOARD_FOCUS FALSE
-        COPY_PLUGIN_AFTER_BUILD TRUE                 # copies the plugin to user plugins folder so as to easily load in DAW
-        PLUGIN_MANUFACTURER_CODE Juce                #
-        PLUGIN_CODE MNLM                             # MUST BE UNIQUE!! If similar to other plugins, conflicts will occur
+        COPY_PLUGIN_AFTER_BUILD TRUE
+        PLUGIN_MANUFACTURER_CODE MTG1   # 4-char code, matches Info.plist
+        PLUGIN_CODE MNLM                # subtype
         FORMATS AU VST3 Standalone
-        PRODUCT_NAME "GrooveTransformerPlugin")           # Replace with your plugin title
+        PRODUCT_NAME "GrooveTransformerPlugin")
+
 #
 ## ONLY NEEDED FOR LINUX and MACOS (for installing libtorch in root directory)
 ## You don't need this if you are not planning to distribute the plugin

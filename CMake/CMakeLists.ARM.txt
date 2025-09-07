@@ -19,8 +19,8 @@ set(APP_SUPPORT_PATH "/Library/Application Support")
 # Compile against the original libtorch install
 set(TORCH_ROOT_PATH "/Library/Application Support/libtorch/libtorch-${TORCH_VERSION}-${CMAKE_BUILD_TYPE}")
 
-# Runtime dylibs location (relocated copy)
-set(TORCH_RUNTIME_PATH "/Library/MusicTechnologyGroup/libtorch/${TORCH_VERSION}-${CMAKE_BUILD_TYPE}")
+# Runtime dylibs location (relocated copy, used by both AU and VST3)
+set(TORCH_RUNTIME_PATH "$ENV{HOME}/Library/Application Support/Libtorch/${TORCH_VERSION}/lib")
 
 message(STATUS "APP_SUPPORT_PATH: ${APP_SUPPORT_PATH}")
 message(STATUS "TORCH_ROOT_PATH: ${TORCH_ROOT_PATH}")
@@ -51,9 +51,10 @@ target_link_libraries(${BaseTargetName} PRIVATE
     juce_recommended_warning_flags
     juce::juce_osc
     ${TORCH_LIBRARIES}
-    # ensure runtime loader finds relocated dylibs
-    -Wl,-rpath,${TORCH_RUNTIME_PATH}
+    # search inside the bundle Resources (for VST3 and AU)
     -Wl,-rpath,@loader_path/../Resources
+    # search Application Support distributed dylibs
+    -Wl,-rpath,"${TORCH_RUNTIME_PATH}"
 )
 
 # ==============================================================================
@@ -159,36 +160,45 @@ add_definitions(-DRESOURCES_DIR="${CMAKE_BINARY_DIR}/PluginCode/${BaseTargetName
 # ==============================================================================
 # Post Build > Relink Plugin Binary to Relocated Torch dylibs
 # ==============================================================================
-set(PLUGIN_BINARY
-    "${CMAKE_BINARY_DIR}/PluginCode/${BaseTargetName}_artefacts/${CMAKE_BUILD_TYPE}/VST3/${BaseTargetName}.vst3/Contents/MacOS/${BaseTargetName}"
-)
+file(GLOB TORCH_DYLIBS "${TORCH_RUNTIME_PATH}/*.dylib")
 
-add_custom_command(
-    OUTPUT "${PLUGIN_BINARY}.patched"
-    COMMAND ${CMAKE_COMMAND} -E echo "Relinking plugin binary to Torch dylibs in ${TORCH_RUNTIME_PATH}"
-    COMMAND install_name_tool -change "${TORCH_ROOT_PATH}/lib/libc10.dylib"
-                              "${TORCH_RUNTIME_PATH}/libc10.dylib"
-                              "${PLUGIN_BINARY}"
-    COMMAND install_name_tool -change "${TORCH_ROOT_PATH}/lib/libtorch_cpu.dylib"
-                              "${TORCH_RUNTIME_PATH}/libtorch_cpu.dylib"
-                              "${PLUGIN_BINARY}"
-    COMMAND install_name_tool -change "${TORCH_ROOT_PATH}/lib/libtorch.dylib"
-                              "${TORCH_RUNTIME_PATH}/libtorch.dylib"
-                              "${PLUGIN_BINARY}"
-    COMMAND ${CMAKE_COMMAND} -E touch "${PLUGIN_BINARY}.patched"
-    DEPENDS "${PLUGIN_BINARY}"
-    VERBATIM
-)
+foreach(DYLIB ${TORCH_DYLIBS})
+    get_filename_component(DYLIB_NAME ${DYLIB} NAME)
 
-add_custom_target(patch_plugin ALL DEPENDS "${PLUGIN_BINARY}.patched")
+    # Fix dylib install name so it resolves via @rpath
+    add_custom_command(TARGET ${BaseTargetName} POST_BUILD
+        COMMAND install_name_tool -id @rpath/${DYLIB_NAME} ${DYLIB}
+    )
+
+    # Fix VST3 binary references
+    add_custom_command(TARGET ${BaseTargetName} POST_BUILD
+        COMMAND install_name_tool -change ${DYLIB} @rpath/${DYLIB_NAME}
+            "$ENV{HOME}/Library/Audio/Plug-Ins/VST3/${BaseTargetName}.vst3/Contents/MacOS/${BaseTargetName}"
+    )
+
+    # Fix AU binary references
+    add_custom_command(TARGET ${BaseTargetName} POST_BUILD
+        COMMAND install_name_tool -change ${DYLIB} @rpath/${DYLIB_NAME}
+            "$ENV{HOME}/Library/Audio/Plug-Ins/Components/${BaseTargetName}.component/Contents/MacOS/${BaseTargetName}"
+    )
+endforeach()
 
 # ==============================================================================
-# Post Build > Copy plugin to local VST3 folder
+# Post Build > Copy VST3 and AU Bundles to Local Plugin Folders
 # ==============================================================================
-add_custom_command(TARGET patch_plugin POST_BUILD
+
+# VST3
+add_custom_command(TARGET ${BaseTargetName} POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_directory
         "${CMAKE_BINARY_DIR}/PluginCode/${BaseTargetName}_artefacts/${CMAKE_BUILD_TYPE}/VST3/${BaseTargetName}.vst3"
         "$ENV{HOME}/Library/Audio/Plug-Ins/VST3/${BaseTargetName}.vst3"
+)
+
+# AU
+add_custom_command(TARGET ${BaseTargetName} POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+        "${CMAKE_BINARY_DIR}/PluginCode/${BaseTargetName}_artefacts/${CMAKE_BUILD_TYPE}/AU/${BaseTargetName}.component"
+        "$ENV{HOME}/Library/Audio/Plug-Ins/Components/${BaseTargetName}.component"
 )
 
 # ==============================================================================
